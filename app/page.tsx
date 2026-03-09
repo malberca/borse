@@ -82,9 +82,46 @@ const covers = [
 ];
 
 const downloads = ["PDF de concepto", "Tapas finales", "Pack de mockups"];
+const tracks = [
+  { title: "Cuatro Enemigos", status: "Final", image: true },
+  { title: "Los Giles", status: "En proceso", image: false },
+  { title: "Nunca Más", status: "En proceso", image: false },
+  { title: "Vestigios", status: "En proceso", image: false },
+];
 
 const ACCESS_PASSWORD = "BORSE2026";
 const ACCESS_STORAGE_KEY = "mano-client-access";
+
+function TrackCard({
+  title,
+  status,
+  image,
+}: {
+  title: string;
+  status: string;
+  image: boolean;
+}) {
+  return (
+    <article className="trackCard">
+      <div className="trackCardHead">
+        <div>
+          <h3>{title}</h3>
+          <p className="trackMeta">BORSE · EP track</p>
+        </div>
+        <span className={`trackStatus ${status === "Final" ? "trackStatusFinal" : "trackStatusPending"}`}>
+          {status}
+        </span>
+      </div>
+      <div className="trackArtwork">
+        {image ? (
+          <img src="/img/cuatro_enemigos.png" alt={`${title} artwork`} />
+        ) : (
+          <div className="trackPlaceholder">En proceso</div>
+        )}
+      </div>
+    </article>
+  );
+}
 
 export default function Page() {
   const [isUnlocked, setIsUnlocked] = useState(false);
@@ -206,6 +243,18 @@ export default function Page() {
               <strong>{item.title}</strong>
               <p>{item.body}</p>
             </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="panel reveal reveal-4 tracksSection">
+        <div className="sectionIntro">
+          <span className="eyebrow">Tracks del EP</span>
+          <h2>Revisados</h2>
+        </div>
+        <div className="tracksGrid">
+          {tracks.map((track) => (
+            <TrackCard key={track.title} {...track} />
           ))}
         </div>
       </section>
@@ -382,9 +431,11 @@ export default function Page() {
         </aside>
       </section>
 
-      <footer className="footer reveal reveal-6">
-        <span>BORSE · EP · Visual Concept · WIP</span>
-        <span>MA-NO DIGITAL CONSULTING · mano.work</span>
+      <footer className="footerMarquee reveal reveal-6" aria-label="Footer marquee">
+        <div className="footerMarqueeTrack">
+          <span>Material exclusivo para Mariano Borserini (BORSE) • Todo el contenido está protegido por derechos de autor • Prohibida la reproducción o distribución total o parcial •</span>
+          <span>Material exclusivo para Mariano Borserini (BORSE) • Todo el contenido está protegido por derechos de autor • Prohibida la reproducción o distribución total o parcial •</span>
+        </div>
       </footer>
     </main>
   );
