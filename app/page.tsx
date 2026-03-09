@@ -116,9 +116,10 @@ export default function Page() {
       <main className="loginScreen">
         <section className="loginCard">
           <div className="loginBrand">
-            <img src="/img/logo-mano.png" alt="MA-NO Consultora" />
+            <img src="/img/mano-logo26-w.svg" alt="MA-NO Consultora" />
           </div>
-          <span className="eyebrow">Acceso de clientes · MA-NO Consultora</span>
+          <span className="loginEyebrow">Acceso de clientes · MA-NO Consultora</span>
+          <span className="loginVersion">version 2.0</span>
           <h1>Ingreso privado</h1>
           <p>Ingresá la password para ver la presentación de Borse.</p>
           <form className="loginForm" onSubmit={handleSubmit}>

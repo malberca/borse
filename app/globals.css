@@ -146,11 +146,34 @@ h1, h2, strong, .pieceMeta strong, .materialMeta strong, .coverMeta strong {
   margin: 10px 0 10px;
   font-size: 42px;
   letter-spacing: -0.04em;
+  color: #ffffff;
 }
 
 .loginCard p {
   margin: 0;
   line-height: 1.6;
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.loginEyebrow {
+  display: inline-block;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.loginVersion {
+  display: inline-flex;
+  margin-top: 12px;
+  padding: 9px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  color: #ffffff;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: 11px;
 }
 
 .loginForm {
