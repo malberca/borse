@@ -300,6 +300,7 @@ export default function Page() {
         <a className="controlButton" href="#estado-proyecto">Timeline</a>
         <a className="controlButton" href="#revisados">Revisados</a>
         <a className="controlButton" href="#merch">Merch</a>
+        <a className="controlButton" href="/manuscrito">Manuscrito</a>
         <a className="controlButton" href="/proceso-creativo/cuatro-enemigos">Cuatro Enemigos</a>
         <a className="controlButton" href="/proceso-creativo/los-giles">Los Giles</a>
         <a className="controlButton" href="/proceso-creativo/nunca-mas">Nunca Más</a>

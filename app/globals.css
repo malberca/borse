@@ -881,6 +881,7 @@ details summary {
 
 .trackCard {
   position: relative;
+  height: 100%;
   border-radius: 22px;
   border: 1px solid rgba(255, 255, 255, 0.18);
   transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
@@ -896,6 +897,7 @@ details summary {
 
 .trackCardInner {
   position: relative;
+  height: 100%;
   min-height: 100%;
   transform-style: preserve-3d;
   transition: transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
@@ -906,6 +908,7 @@ details summary {
 }
 
 .trackCardFace {
+  height: 100%;
   border-radius: 22px;
   overflow: hidden;
   background: #f7f7f4;
@@ -916,6 +919,9 @@ details summary {
 
 .trackCardFaceFront {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
 }
 
 .trackCardFlipped .trackCardFaceFront {
@@ -924,17 +930,21 @@ details summary {
 
 .trackReviewRibbon {
   position: absolute;
-  top: 14px;
-  left: 14px;
+  top: 16px;
+  left: -34px;
   z-index: 3;
-  padding: 8px 11px;
-  border-radius: 999px;
+  width: 148px;
+  padding: 8px 0;
   color: #fff;
   font-size: 10px;
   font-weight: 800;
   letter-spacing: 0.14em;
+  text-align: center;
   text-transform: uppercase;
+  transform: rotate(-45deg);
+  transform-origin: center;
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+  pointer-events: none;
 }
 
 .trackReviewRibbonApproved {
@@ -977,8 +987,9 @@ details summary {
   justify-content: space-between;
   align-items: flex-start;
   gap: 12px;
-  padding: 16px;
-  min-height: 132px;
+  padding: 10px 16px 22px;
+  height: 132px;
+  flex: 0 0 132px;
 }
 
 .trackCardHead h3 {
@@ -1000,9 +1011,9 @@ details summary {
   place-items: center;
   width: 44px;
   min-height: 88px;
-  padding: 12px 8px;
+  padding: 10px 8px;
   border-radius: 22px;
-  font-size: 9px;
+  font-size: 8px;
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -1019,8 +1030,8 @@ details summary {
 }
 
 .trackStatusPending {
-  color: #ffffff;
-  background: linear-gradient(135deg, #b86d3f, #d6914f);
+  color: #2d2500;
+  background: linear-gradient(135deg, #d4b237, #f0d96a);
 }
 
 .tracksGuide {
@@ -1168,30 +1179,33 @@ details summary {
   line-height: 1.5;
 }
 
-.trackArtwork img,
-.trackPlaceholder {
-  width: 100%;
-  aspect-ratio: 4 / 5;
-}
-
 .trackArtwork {
   position: relative;
+  flex: 1 1 auto;
+  display: flex;
+  min-height: 0;
+  overflow: hidden;
+  border-radius: 22px 22px 0 0;
 }
 
 .trackArtwork img {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  border-radius: 28px;
+  flex: 1 1 auto;
 }
 
 .trackPlaceholder {
   position: relative;
+  width: 100%;
+  height: 100%;
   display: flex;
+  flex: 1 1 auto;
   align-items: center;
   justify-content: center;
   background: #d7d7d2;
   color: #666;
   font-size: 16px;
-  border-radius: 22px;
 }
 
 .trackPlaceholder > span {
@@ -1767,5 +1781,352 @@ details summary {
 
   .tracksGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.manuscriptPage {
+  position: relative;
+  min-height: 100vh;
+  padding: 32px 20px 64px;
+  color: #2d241d;
+  background:
+    radial-gradient(circle at top, rgba(247, 239, 222, 0.84), transparent 30%),
+    radial-gradient(circle at bottom, rgba(107, 79, 45, 0.12), transparent 28%),
+    linear-gradient(180deg, #201913 0%, #2c241d 18%, #d4c2a1 18.2%, #e7d9bd 100%);
+}
+
+@keyframes manuscriptWidgetDrift {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) rotate(-1deg);
+  }
+  50% {
+    transform: translate3d(0, -8px, 0) rotate(1deg);
+  }
+}
+
+@keyframes manuscriptWidgetGlow {
+  0%, 100% {
+    box-shadow: 0 18px 44px rgba(25, 18, 11, 0.24);
+  }
+  50% {
+    box-shadow: 0 24px 56px rgba(25, 18, 11, 0.3);
+  }
+}
+
+.manuscriptVignette,
+.manuscriptTexture {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+}
+
+.manuscriptVignette {
+  z-index: 0;
+  background: radial-gradient(circle at center, transparent 42%, rgba(23, 17, 12, 0.18) 100%);
+}
+
+.manuscriptTexture {
+  z-index: 0;
+  opacity: 0.32;
+  background-image:
+    linear-gradient(0deg, rgba(122, 90, 50, 0.03), rgba(122, 90, 50, 0.03)),
+    radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.2) 0 0.8px, transparent 1px),
+    radial-gradient(circle at 80% 30%, rgba(76, 49, 22, 0.12) 0 1px, transparent 1.2px),
+    radial-gradient(circle at 40% 70%, rgba(96, 70, 40, 0.08) 0 1px, transparent 1.2px);
+  background-size: auto, 16px 16px, 22px 22px, 28px 28px;
+  mix-blend-mode: multiply;
+}
+
+.manuscriptTopbar,
+.manuscriptBook {
+  position: relative;
+  z-index: 1;
+}
+
+.manuscriptAudioWidget {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 2;
+  width: min(320px, calc(100vw - 24px));
+}
+
+.manuscriptAudioCard {
+  padding: 14px;
+  border-radius: 22px;
+  border: 1px solid rgba(117, 90, 47, 0.18);
+  background: rgba(243, 232, 209, 0.78);
+  box-shadow: 0 18px 44px rgba(25, 18, 11, 0.24);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transform-origin: center bottom;
+  animation: manuscriptWidgetDrift 8s ease-in-out infinite, manuscriptWidgetGlow 8s ease-in-out infinite;
+}
+
+.manuscriptAudioCard strong {
+  display: block;
+  margin-top: 6px;
+  color: #2f2217;
+  font-family: var(--font-manuscript-display), "Times New Roman", serif;
+  font-size: 24px;
+  line-height: 1.05;
+}
+
+.manuscriptAudioLabel {
+  display: inline-block;
+  color: #8a6a38;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.manuscriptAudioFrame {
+  margin-top: 14px;
+  overflow: hidden;
+  border-radius: 16px;
+  box-shadow: inset 0 0 0 1px rgba(96, 69, 34, 0.12);
+}
+
+.manuscriptAudioFrame iframe {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 0;
+}
+
+.manuscriptTopbar {
+  position: sticky;
+  top: 20px;
+  width: min(1080px, 100%);
+  margin: 0 auto 20px;
+}
+
+.manuscriptBackLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(117, 90, 47, 0.26);
+  background: rgba(248, 241, 228, 0.7);
+  color: #5d4626;
+  font-family: var(--font-manuscript-body), Georgia, serif;
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: background 160ms ease, border-color 160ms ease, transform 160ms ease;
+}
+
+.manuscriptBackLink:hover {
+  transform: translateY(-1px);
+  border-color: rgba(117, 90, 47, 0.42);
+  background: rgba(248, 241, 228, 0.88);
+}
+
+.manuscriptBook {
+  width: min(860px, 100%);
+  margin: 0 auto;
+  padding: clamp(32px, 6vw, 72px);
+  border-radius: 32px;
+  border: 1px solid rgba(113, 83, 44, 0.18);
+  background: linear-gradient(180deg, rgba(249, 241, 223, 0.98) 0%, rgba(237, 225, 199, 0.98) 100%);
+  box-shadow:
+    0 24px 80px rgba(20, 14, 8, 0.26),
+    inset 0 1px 0 rgba(255, 255, 255, 0.46),
+    inset 0 0 0 1px rgba(137, 106, 67, 0.08);
+}
+
+.manuscriptHero {
+  padding-bottom: 36px;
+  border-bottom: 1px solid rgba(96, 69, 34, 0.16);
+}
+
+.manuscriptLabel,
+.manuscriptChapterCount {
+  display: inline-block;
+  color: #8a6a38;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.manuscriptLabel {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.manuscriptHero h1,
+.manuscriptChapter h2 {
+  margin: 14px 0 0;
+  color: #261a12;
+  font-family: var(--font-manuscript-display), "Times New Roman", serif;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+
+.manuscriptHero h1 {
+  font-size: clamp(48px, 8vw, 78px);
+  line-height: 0.95;
+}
+
+.manuscriptHero p {
+  max-width: 28ch;
+  margin: 16px 0 0;
+  color: rgba(51, 37, 23, 0.82);
+  font-family: var(--font-manuscript-body), Georgia, serif;
+  font-size: clamp(20px, 2.4vw, 24px);
+  line-height: 1.45;
+}
+
+.manuscriptHeroBody {
+  display: grid;
+  gap: 16px;
+  margin-top: 28px;
+}
+
+.manuscriptHeroParagraph {
+  max-width: none;
+  margin: 0;
+  color: #30251d;
+  font-family: var(--font-manuscript-body), Georgia, serif;
+  font-size: clamp(22px, 2.9vw, 27px);
+  line-height: 1.72;
+  text-wrap: pretty;
+}
+
+.manuscriptDivider {
+  display: flex;
+  justify-content: center;
+  margin: 42px 0;
+}
+
+.manuscriptDivider span {
+  width: min(180px, 100%);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(103, 75, 39, 0.44), transparent);
+}
+
+.manuscriptChapterHeader {
+  margin-bottom: 24px;
+}
+
+.manuscriptChapterCount {
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.manuscriptChapter h2 {
+  font-size: clamp(34px, 6vw, 52px);
+  line-height: 1;
+}
+
+.manuscriptChapterSubtitle {
+  margin: 10px 0 0;
+  color: rgba(70, 49, 26, 0.7);
+  font-family: var(--font-manuscript-body), Georgia, serif;
+  font-size: 18px;
+  font-style: italic;
+  line-height: 1.5;
+}
+
+.manuscriptChapterBody {
+  display: grid;
+  gap: 18px;
+}
+
+.manuscriptParagraph,
+.manuscriptEmphasis {
+  margin: 0;
+  font-family: var(--font-manuscript-body), Georgia, serif;
+}
+
+.manuscriptParagraph {
+  color: #30251d;
+  font-size: clamp(22px, 2.9vw, 27px);
+  line-height: 1.72;
+  text-wrap: pretty;
+}
+
+.manuscriptParagraphDropCap::first-letter {
+  float: left;
+  margin: 0.08em 0.12em 0 0;
+  color: #6f4c25;
+  font-family: var(--font-manuscript-display), "Times New Roman", serif;
+  font-size: 4.2em;
+  line-height: 0.82;
+}
+
+.manuscriptEmphasis {
+  margin-top: 8px;
+  padding-left: 18px;
+  border-left: 2px solid rgba(124, 92, 51, 0.3);
+  color: #533d25;
+  font-size: clamp(22px, 2.7vw, 26px);
+  font-style: italic;
+  line-height: 1.65;
+}
+
+.manuscriptFooter {
+  margin-top: 48px;
+  padding-top: 28px;
+  border-top: 1px solid rgba(96, 69, 34, 0.14);
+}
+
+.manuscriptBackLinkBottom {
+  background: rgba(118, 88, 48, 0.08);
+}
+
+@media (max-width: 720px) {
+  .manuscriptPage {
+    padding: 18px 12px 42px;
+  }
+
+  .manuscriptTopbar {
+    top: 12px;
+    margin-bottom: 14px;
+  }
+
+  .manuscriptAudioWidget {
+    right: 12px;
+    bottom: 12px;
+    width: min(280px, calc(100vw - 24px));
+  }
+
+  .manuscriptAudioCard {
+    padding: 12px;
+    border-radius: 18px;
+  }
+
+  .manuscriptAudioCard strong {
+    font-size: 20px;
+  }
+
+  .manuscriptBook {
+    padding: 26px 20px 30px;
+    border-radius: 24px;
+  }
+
+  .manuscriptHero {
+    padding-bottom: 28px;
+  }
+
+  .manuscriptHero p {
+    max-width: none;
+  }
+
+  .manuscriptDivider {
+    margin: 34px 0;
+  }
+
+  .manuscriptParagraph {
+    font-size: 21px;
+    line-height: 1.66;
+  }
+
+  .manuscriptEmphasis {
+    padding-left: 14px;
+    font-size: 21px;
+    line-height: 1.58;
   }
 }
