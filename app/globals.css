@@ -71,6 +71,11 @@
 
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
 body {
   margin: 0;
   color: var(--ink);
@@ -102,6 +107,7 @@ h1, h2, strong, .pieceMeta strong, .materialMeta strong, .coverMeta strong {
   padding: 24px 0 40px;
   position: relative;
   z-index: 1;
+  overflow-x: clip;
 }
 
 .marquee {
@@ -319,6 +325,19 @@ h1, h2, strong, .pieceMeta strong, .materialMeta strong, .coverMeta strong {
   color: rgba(54, 62, 76, 0.72);
 }
 
+.workspaceLabel {
+  display: inline-flex;
+  margin-bottom: 10px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #0f131b;
+  color: #ffffff;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
 .masthead h1 {
   margin: 10px 0 10px;
   font-size: clamp(42px, 7vw, 88px);
@@ -333,6 +352,7 @@ h1, h2, strong, .pieceMeta strong, .materialMeta strong, .coverMeta strong {
   font-size: 18px;
   color: rgba(38, 45, 57, 0.84);
 }
+
 
 .headerMeta {
   display: flex;
@@ -414,6 +434,106 @@ h1, h2, strong, .pieceMeta strong, .materialMeta strong, .coverMeta strong {
   border-color: var(--line-strong);
 }
 
+.stickyDock {
+  position: fixed;
+  right: max(12px, calc((100vw - min(1440px, calc(100vw - 40px))) / 2 - 52px));
+  top: 50%;
+  z-index: 30;
+  transform: translateY(-50%);
+}
+
+.stickyDockRail {
+  display: grid;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 22px;
+  border: 1px solid var(--line);
+  background: rgba(13, 16, 23, 0.9);
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.stickyDockButton {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 16px;
+  border: 1px solid transparent;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--muted);
+  transition: transform 160ms ease, border-color 160ms ease, color 160ms ease, background 160ms ease;
+}
+
+.stickyDockButton img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.stickyDockButton span {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.stickyDockButton small {
+  position: absolute;
+  right: calc(100% + 12px);
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 8px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: rgba(13, 16, 23, 0.96);
+  color: var(--ink);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 160ms ease, transform 160ms ease;
+}
+
+.stickyDockButton:hover,
+.stickyDockButtonActive {
+  transform: translateX(-2px);
+  color: var(--ink);
+  border-color: rgba(117, 98, 255, 0.34);
+  background: rgba(117, 98, 255, 0.12);
+}
+
+.stickyDockButtonGold {
+  background: linear-gradient(135deg, #b28a48, #e0ba6e);
+  color: #fff;
+}
+
+.stickyDockButtonBlue {
+  background: linear-gradient(135deg, #345dcb, #4f86ff);
+  color: #fff;
+}
+
+.stickyDockButtonEmerald {
+  background: linear-gradient(135deg, #2f7f67, #5ec7a7);
+  color: #fff;
+}
+
+.stickyDockButtonEmber {
+  background: linear-gradient(135deg, #8f4f33, #cf7b4a);
+  color: #fff;
+}
+
+.stickyDockButton:hover small,
+.stickyDockButtonActive small {
+  opacity: 1;
+  transform: translateY(-50%) translateX(-2px);
+}
+
 .metaChip,
 .explanationBlock summary,
 details summary {
@@ -432,6 +552,254 @@ details summary {
   display: grid;
   gap: 20px;
   margin-top: 20px;
+}
+
+.merchLayout {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.processPage {
+  padding-bottom: 56px;
+}
+
+.processHeader {
+  margin-top: 20px;
+  border-radius: var(--radius-xl);
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, rgba(232, 236, 242, 0.98) 0%, rgba(215, 221, 230, 0.96) 52%, rgba(58, 67, 84, 0.78) 100%),
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.72), transparent 24%);
+  border-color: rgba(255, 255, 255, 0.46);
+}
+
+.processTitle {
+  margin: 8px 0 0;
+  font-size: clamp(38px, 6vw, 72px);
+  letter-spacing: -0.06em;
+  color: #151b26;
+}
+
+.processLead {
+  max-width: 62ch;
+  margin: 14px 0 0;
+  line-height: 1.65;
+  color: rgba(31, 38, 50, 0.84);
+}
+
+.processHeroGrid {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.processStatusBlock {
+  flex: 0 0 auto;
+}
+
+.processStickyDock {
+  position: fixed;
+  right: max(10px, calc((100vw - min(1440px, calc(100% - 40px))) / 2 + 8px));
+  top: 50%;
+  z-index: 32;
+  transform: translateY(-50%);
+}
+
+.processStickyRail {
+  display: grid;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(15, 19, 27, 0.88);
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.processStickyButton {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  overflow: hidden;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: transform 160ms ease, box-shadow 160ms ease, outline-color 160ms ease;
+  outline: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.processStickyButton img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.processStickyButton span {
+  display: block;
+}
+
+.processStickyButtonGold {
+  background: linear-gradient(135deg, #b28a48, #e0ba6e);
+}
+
+.processStickyButtonBlue {
+  background: linear-gradient(135deg, #345dcb, #4f86ff);
+}
+
+.processStickyButtonEmerald {
+  background: linear-gradient(135deg, #2f7f67, #5ec7a7);
+}
+
+.processStickyButtonEmber {
+  background: linear-gradient(135deg, #8f4f33, #cf7b4a);
+}
+
+.processStickyButtonActive,
+.processStickyButton:hover {
+  transform: translateX(-2px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.22);
+  outline-color: rgba(255, 255, 255, 0.28);
+}
+
+.processModuleGrid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.processModuleCard {
+  border-radius: var(--radius-lg);
+  padding: 18px;
+  transition: transform 180ms ease, border-color 180ms ease;
+}
+
+.processModuleCard:hover {
+  transform: translateY(-3px);
+  border-color: rgba(117, 98, 255, 0.26);
+}
+
+.processModuleCard strong {
+  display: block;
+  margin-top: 10px;
+  font-size: 20px;
+}
+
+.processModuleCard p {
+  margin: 10px 0 0;
+  line-height: 1.6;
+}
+
+.processContentGrid {
+  margin-top: 20px;
+}
+
+.processTrackLayout {
+  display: grid;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.processTextBlock {
+  display: grid;
+  gap: 14px;
+}
+
+.processTextBlock p {
+  margin: 0;
+  line-height: 1.7;
+}
+
+.phraseGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.phraseChip {
+  padding: 10px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--ink);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.processBulletGrid {
+  display: grid;
+  gap: 12px;
+}
+
+.processGallery {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 18px;
+}
+
+.processGalleryCard {
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: var(--panel-2);
+}
+
+.processGalleryCard img {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+}
+
+.processBulletCard {
+  display: grid;
+  grid-template-columns: 12px minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+}
+
+.processBulletCard p {
+  margin: 0;
+  line-height: 1.65;
+}
+
+.processSplitGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.processPlaceholderPanel {
+  border-radius: 20px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.03);
+  padding: 20px;
+}
+
+.processPlaceholderPanel p {
+  margin: 0;
+  line-height: 1.7;
+}
+
+.processPlaceholderPanel span {
+  display: inline-flex;
+  margin-top: 16px;
+  padding: 10px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
 }
 
 .projectTimelinePanel {
@@ -505,20 +873,80 @@ details summary {
   gap: 16px;
 }
 
+.tracksIntro {
+  max-width: 72ch;
+  margin: 10px 0 0;
+  line-height: 1.65;
+}
+
 .trackCard {
+  position: relative;
   border-radius: 22px;
-  overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.18);
-  background: #f7f7f4;
-  color: #171717;
   transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
   box-shadow: 0 18px 40px rgba(0, 0, 0, 0.12);
+  perspective: 1200px;
 }
 
 .trackCard:hover {
   transform: translateY(-3px);
   border-color: rgba(255, 255, 255, 0.35);
   box-shadow: 0 24px 48px rgba(0, 0, 0, 0.16);
+}
+
+.trackCardInner {
+  position: relative;
+  min-height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.trackCardFlipped .trackCardInner {
+  transform: rotateY(180deg);
+}
+
+.trackCardFace {
+  border-radius: 22px;
+  overflow: hidden;
+  background: #f7f7f4;
+  color: #171717;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.trackCardFaceFront {
+  position: relative;
+}
+
+.trackCardFlipped .trackCardFaceFront {
+  pointer-events: none;
+}
+
+.trackCardFaceBack {
+  position: absolute;
+  inset: 0;
+  transform: rotateY(180deg);
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  pointer-events: none;
+}
+
+.trackCardFlipped .trackCardFaceBack {
+  pointer-events: auto;
+}
+
+.trackFlipHotspot {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.trackCardFlipped .trackFlipHotspot {
+  pointer-events: none;
 }
 
 .trackCardHead {
@@ -544,24 +972,106 @@ details summary {
 }
 
 .trackStatus {
-  padding: 8px 10px;
+  padding: 7px 11px;
   border-radius: 999px;
-  font-size: 11px;
-  letter-spacing: 0.12em;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  border: 1px solid var(--line-strong);
+  border: 0;
+  white-space: nowrap;
+  line-height: 1;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
 }
 
 .trackStatusFinal {
-  color: #417652;
-  background: rgba(141, 189, 153, 0.18);
-  border-color: rgba(141, 189, 153, 0.34);
+  color: #ffffff;
+  background: linear-gradient(135deg, #7c9a5d, #9fb46f);
 }
 
 .trackStatusPending {
-  color: #6f6f6f;
-  background: rgba(0, 0, 0, 0.04);
-  border-color: rgba(0, 0, 0, 0.08);
+  color: #ffffff;
+  background: linear-gradient(135deg, #b86d3f, #d6914f);
+}
+
+.trackReviewHead {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.trackBackButton {
+  border: 0;
+  padding: 8px 10px;
+  border-radius: 999px;
+  background: #151923;
+  color: #fff;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.trackReviewForm {
+  display: grid;
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.trackApprovalRow {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.trackApprovalButton {
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 14px;
+  padding: 12px;
+  background: #ffffff;
+  color: #171717;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.trackApprovalButtonReject {
+  background: #fff7f5;
+}
+
+.trackApprovalButtonActive {
+  border-color: rgba(117, 98, 255, 0.34);
+  box-shadow: inset 0 0 0 1px rgba(117, 98, 255, 0.2);
+}
+
+.trackCommentBox {
+  width: 100%;
+  min-height: 148px;
+  resize: vertical;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 18px;
+  background: #ffffff;
+  color: #171717;
+  padding: 14px;
+  font: inherit;
+}
+
+.trackReviewMeta {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: #6b6b6b;
+  font-size: 12px;
+}
+
+.trackSubmitButton {
+  border: 0;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #151923, #2b3244);
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
 }
 
 .trackArtwork img,
@@ -570,18 +1080,50 @@ details summary {
   aspect-ratio: 4 / 5;
 }
 
+.trackArtwork {
+  position: relative;
+}
+
 .trackArtwork img {
   object-fit: cover;
   border-radius: 28px;
 }
 
 .trackPlaceholder {
-  display: grid;
-  place-items: center;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: #d7d7d2;
   color: #666;
   font-size: 16px;
   border-radius: 22px;
+}
+
+.trackPlaceholder > span {
+  position: relative;
+  z-index: 1;
+}
+
+.trackArtworkOverlay {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 16px;
+  z-index: 1;
+  padding: 12px 14px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(10, 10, 10, 0.04), rgba(10, 10, 10, 0.44));
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.trackArtworkOverlay p {
+  margin: 0;
+  color: #ffffff;
+  font-size: 13px;
+  line-height: 1.55;
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.3);
 }
 
 .projectMilestone {
@@ -794,7 +1336,8 @@ details summary {
 }
 
 .timelineList,
-.downloadList {
+.downloadList,
+.fileLinkList {
   display: grid;
   gap: 14px;
 }
@@ -828,6 +1371,55 @@ details summary {
 
 .downloadItem {
   grid-template-columns: 12px minmax(0, 1fr);
+}
+
+.fileLinkItem {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+  padding: 16px 0;
+  border-top: 1px solid var(--line);
+  transition: transform 160ms ease, color 160ms ease;
+}
+
+.fileLinkItem:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.fileLinkItem:last-child {
+  padding-bottom: 0;
+}
+
+.fileLinkItem strong {
+  display: block;
+  font-size: 16px;
+}
+
+.fileLinkItem span {
+  display: block;
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.fileLinkItem:hover {
+  transform: translateX(2px);
+}
+
+.fileLinkArrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  margin-top: 0 !important;
+  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--ink) !important;
+  font-size: 16px !important;
 }
 
 .downloadDot {
@@ -968,12 +1560,18 @@ details summary {
     grid-template-columns: 1fr;
   }
 
+  .processModuleGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .tracksGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .heroLayout,
-  .contentGrid {
+  .contentGrid,
+  .processSplitGrid,
+  .processGallery {
     grid-template-columns: 1fr;
   }
 }
@@ -984,7 +1582,43 @@ details summary {
     padding-top: 14px;
   }
 
+  .stickyDock {
+    right: 6px;
+  }
+
+  .processStickyDock {
+    right: 10px;
+  }
+
+  .processStickyRail {
+    gap: 8px;
+    padding: 8px;
+  }
+
+  .processStickyButton {
+    width: 42px;
+    height: 42px;
+    border-radius: 14px;
+  }
+
+  .stickyDockRail {
+    gap: 8px;
+    padding: 8px;
+    border-radius: 20px;
+  }
+
+  .stickyDockButton {
+    width: 40px;
+    height: 40px;
+    border-radius: 14px;
+  }
+
+  .stickyDockButton small {
+    display: none;
+  }
+
   .masthead,
+  .processHeroGrid,
   .projectTimelineHead,
   .controlBar {
     flex-direction: column;
@@ -1031,7 +1665,9 @@ details summary {
 
   .pieceGrid,
   .materialGrid,
-  .coverGrid {
+  .coverGrid,
+  .merchLayout,
+  .processModuleGrid {
     grid-template-columns: 1fr;
   }
 
