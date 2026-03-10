@@ -1496,7 +1496,7 @@ details summary {
 
 .fileLinkItem {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: auto minmax(0, 1fr);
   gap: 14px;
   align-items: center;
   padding: 16px 0;
@@ -1533,14 +1533,80 @@ details summary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 34px;
-  height: 34px;
+  width: 20px;
+  height: 20px;
   margin-top: 0 !important;
-  border-radius: 999px;
-  border: 1px solid var(--line-strong);
-  background: rgba(255, 255, 255, 0.04);
   color: var(--ink) !important;
   font-size: 16px !important;
+  flex: 0 0 auto;
+}
+
+.fileLinkArrow svg {
+  width: 20px;
+  height: 20px;
+}
+
+.downloadsPanel {
+  background:
+    radial-gradient(circle at top left, rgba(149, 212, 160, 0.18), transparent 28%),
+    linear-gradient(180deg, #1d5c42 0%, #154332 100%);
+  border-color: rgba(149, 212, 160, 0.34);
+}
+
+.downloadsStrip {
+  margin-top: 20px;
+}
+
+.downloadsStripIntro {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 20px;
+}
+
+.downloadsStripIntro p {
+  max-width: 34ch;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.74);
+}
+
+.downloadsStripList {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 0;
+  margin-top: 22px;
+}
+
+.downloadsPanel .eyebrow,
+.downloadsPanel .sectionIntro h2,
+.downloadsPanel .fileLinkItem strong {
+  color: #ffffff;
+}
+
+.downloadsPanel .fileLinkItem {
+  padding: 18px 16px;
+  border-top: 0;
+  border-left: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.downloadsPanel .fileLinkItem:first-child {
+  border-left: 0;
+  padding-top: 18px;
+}
+
+.downloadsPanel .fileLinkItem:last-child {
+  padding-bottom: 18px;
+}
+
+.downloadsPanel .fileLinkItem > div span {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.downloadsPanel .fileLinkArrow {
+  color: #ffffff !important;
+}
+
+.downloadsPanel .fileLinkItem:hover {
+  transform: translateX(2px);
 }
 
 .downloadDot {

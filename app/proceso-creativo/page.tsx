@@ -48,6 +48,49 @@ export default function ProcesoCreativoPage() {
           <a className="controlButton" href="#archivos-finales">Descargas</a>
         </nav>
 
+        <section className="panel downloadsPanel downloadsStrip reveal reveal-3" id="archivos-finales">
+          <div className="sectionIntro downloadsStripIntro">
+            <div>
+              <span className="eyebrow">Archivos finales</span>
+              <h2>Drive</h2>
+            </div>
+            <p>Entregables organizados por destino y plataforma.</p>
+          </div>
+          <div className="fileLinkList downloadsStripList">
+            {finalFiles.map((item) => (
+              <a
+                className="fileLinkItem"
+                href={item.href}
+                key={item.label}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <span className="fileLinkArrow" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" role="presentation">
+                    <path
+                      d="M3.75 8.25A2.25 2.25 0 0 1 6 6h3.18c.6 0 1.17.24 1.59.66l1.07 1.09c.42.42.99.65 1.58.65H18A2.25 2.25 0 0 1 20.25 10.5v5.25A2.25 2.25 0 0 1 18 18H6a2.25 2.25 0 0 1-2.25-2.25V8.25Z"
+                      stroke="currentColor"
+                      strokeWidth="1.7"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <path
+                      d="M8.25 12h7.5"
+                      stroke="currentColor"
+                      strokeWidth="1.7"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                </span>
+                <div>
+                  <strong>{item.label}</strong>
+                  <span>Disponible en Drive</span>
+                </div>
+              </a>
+            ))}
+          </div>
+        </section>
+
         <section className="processModuleGrid">
           {processModules.map((item, index) => (
             <a
@@ -224,29 +267,6 @@ export default function ProcesoCreativoPage() {
               </details>
             </article>
 
-            <article className="sidePanel reveal reveal-6" id="archivos-finales">
-              <div className="sectionIntro">
-                <span className="eyebrow">Archivos finales</span>
-                <h2>Drive</h2>
-              </div>
-              <div className="fileLinkList">
-                {finalFiles.map((item) => (
-                  <a
-                    className="fileLinkItem"
-                    href={item.href}
-                    key={item.label}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    <div>
-                      <strong>{item.label}</strong>
-                      <span>Disponible en Drive</span>
-                    </div>
-                    <span className="fileLinkArrow">↗</span>
-                  </a>
-                ))}
-              </div>
-            </article>
           </aside>
         </section>
 
