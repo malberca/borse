@@ -87,6 +87,19 @@ body {
   overflow-x: hidden;
 }
 
+body.devScalePreview {
+  zoom: 0.75;
+}
+
+@supports not (zoom: 0.75) {
+  body.devScalePreview {
+    transform: scale(0.75);
+    transform-origin: top left;
+    width: 133.3334%;
+    min-height: 133.3334vh;
+  }
+}
+
 input,
 button {
   font: inherit;

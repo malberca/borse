@@ -10,9 +10,11 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  const bodyClassName = process.env.NODE_ENV === "development" ? "devScalePreview" : undefined;
+
   return (
     <html lang="es">
-      <body>{children}</body>
+      <body className={bodyClassName}>{children}</body>
     </html>
   );
 }
