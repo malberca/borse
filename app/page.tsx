@@ -41,16 +41,43 @@ function TrackCard({
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const raw = window.localStorage.getItem(storageKey);
-    if (!raw) return;
 
-    try {
-      const parsed = JSON.parse(raw) as { approval?: "approved" | "rejected" | null; comment?: string; rowId?: number | null };
-      setApproval(parsed.approval ?? null);
-      setComment(parsed.comment ?? "");
-      setRowId(parsed.rowId ?? null);
-      setSaved(Boolean(parsed.approval || parsed.comment));
-    } catch {}
+    let cancelled = false;
+
+    async function loadReview() {
+      try {
+        const response = await fetch(`/api/reviews?slug=${encodeURIComponent(slug)}`, {
+          cache: "no-store",
+        });
+        const data = await response.json();
+
+        if (!cancelled && response.ok && data.ok && data.record) {
+          setApproval(data.record.approval ?? null);
+          setComment(data.record.reviewer_comment ?? "");
+          setRowId(data.record.id ?? null);
+          setSaved(Boolean(data.record.approval || data.record.reviewer_comment));
+          setSubmitMessage("Cargado desde Baserow.");
+          return;
+        }
+      } catch {}
+
+      const raw = window.localStorage.getItem(storageKey);
+      if (!raw || cancelled) return;
+
+      try {
+        const parsed = JSON.parse(raw) as { approval?: "approved" | "rejected" | null; comment?: string; rowId?: number | null };
+        setApproval(parsed.approval ?? null);
+        setComment(parsed.comment ?? "");
+        setRowId(parsed.rowId ?? null);
+        setSaved(Boolean(parsed.approval || parsed.comment));
+      } catch {}
+    }
+
+    void loadReview();
+
+    return () => {
+      cancelled = true;
+    };
   }, [storageKey]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {

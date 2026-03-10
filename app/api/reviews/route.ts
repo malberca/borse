@@ -51,6 +51,72 @@ function validate(payload: Partial<ReviewPayload>) {
   return null;
 }
 
+export async function GET(request: Request) {
+  if (missingConfig()) {
+    return NextResponse.json(
+      {
+        ok: false,
+        error: "Baserow is not configured. Set BASEROW_API_TOKEN and BASEROW_TABLE_ID in the server env.",
+      },
+      { status: 500 },
+    );
+  }
+
+  const { searchParams } = new URL(request.url);
+  const slug = searchParams.get("slug");
+  const client = searchParams.get("client") ?? "BORSE";
+  const project = searchParams.get("project") ?? "EP Concept";
+
+  if (!slug) {
+    return NextResponse.json({ ok: false, error: "Missing slug query param." }, { status: 400 });
+  }
+
+  const url = new URL(`${BASEROW_API_URL}/api/database/rows/table/${BASEROW_TABLE_ID}/`);
+  url.searchParams.set("user_field_names", "true");
+  url.searchParams.set("size", "1");
+  url.searchParams.set("filter__slug__equal", slug);
+  url.searchParams.set("filter__client__equal", client);
+  url.searchParams.set("filter__project__equal", project);
+
+  try {
+    const response = await fetch(url.toString(), {
+      headers: {
+        Authorization: `Token ${BASEROW_API_TOKEN}`,
+      },
+      cache: "no-store",
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      return NextResponse.json(
+        {
+          ok: false,
+          error: "Baserow request failed.",
+          details: data,
+        },
+        { status: response.status },
+      );
+    }
+
+    const record = Array.isArray(data.results) ? data.results[0] ?? null : null;
+
+    return NextResponse.json({
+      ok: true,
+      record,
+    });
+  } catch (error) {
+    return NextResponse.json(
+      {
+        ok: false,
+        error: "Could not reach Baserow.",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
+      { status: 502 },
+    );
+  }
+}
+
 export async function POST(request: Request) {
   if (missingConfig()) {
     return NextResponse.json(
