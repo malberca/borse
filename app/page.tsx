@@ -35,6 +35,9 @@ function TrackCard({
   const [approval, setApproval] = useState<"approved" | "rejected" | null>(null);
   const [comment, setComment] = useState("");
   const [saved, setSaved] = useState(false);
+  const [rowId, setRowId] = useState<number | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitMessage, setSubmitMessage] = useState<string | null>(null);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -42,31 +45,88 @@ function TrackCard({
     if (!raw) return;
 
     try {
-      const parsed = JSON.parse(raw) as { approval?: "approved" | "rejected" | null; comment?: string };
+      const parsed = JSON.parse(raw) as { approval?: "approved" | "rejected" | null; comment?: string; rowId?: number | null };
       setApproval(parsed.approval ?? null);
       setComment(parsed.comment ?? "");
+      setRowId(parsed.rowId ?? null);
       setSaved(Boolean(parsed.approval || parsed.comment));
     } catch {}
   }, [storageKey]);
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (typeof window === "undefined") return;
 
-    window.localStorage.setItem(
-      storageKey,
-      JSON.stringify({
-        title,
-        status,
-        approval,
-        reviewerComment: comment,
-        reviewer,
-        lastUpdate,
-        reviewedAt: new Date().toISOString(),
-      }),
-    );
+    setIsSubmitting(true);
+    setSubmitMessage(null);
 
-    setSaved(true);
+    const reviewedAt = new Date().toISOString();
+    const payload = {
+      rowId,
+      client: "BORSE",
+      project: "EP Concept",
+      slug,
+      title,
+      piece_type: "track-card",
+      status: status.toLowerCase(),
+      approval,
+      reviewer_comment: comment,
+      reviewer,
+      reviewed_at: reviewedAt,
+      updated_at: reviewedAt,
+      version: lastUpdate,
+    };
+
+    try {
+      const response = await fetch("/api/reviews", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.ok) {
+        window.localStorage.setItem(
+          storageKey,
+          JSON.stringify({
+            approval,
+            comment,
+            rowId,
+          }),
+        );
+        setSaved(true);
+        setSubmitMessage("Guardado local. Falta configurar Baserow.");
+        return;
+      }
+
+      setRowId(data.rowId ?? null);
+      window.localStorage.setItem(
+        storageKey,
+        JSON.stringify({
+          approval,
+          comment,
+          rowId: data.rowId ?? null,
+        }),
+      );
+      setSaved(true);
+      setSubmitMessage("Review guardada.");
+    } catch {
+      window.localStorage.setItem(
+        storageKey,
+        JSON.stringify({
+          approval,
+          comment,
+          rowId,
+        }),
+      );
+      setSaved(true);
+      setSubmitMessage("Guardado local. Sin conexión con Baserow.");
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -74,6 +134,15 @@ function TrackCard({
       <div className="trackCardInner">
         <div className="trackCardFace trackCardFaceFront">
           <button className="trackFlipHotspot" type="button" aria-label={`Revisar ${title}`} onClick={() => setIsFlipped(true)} />
+          {saved && approval ? (
+            <span
+              className={`trackReviewRibbon ${
+                approval === "approved" ? "trackReviewRibbonApproved" : "trackReviewRibbonRejected"
+              }`}
+            >
+              {approval === "approved" ? "Aprobado" : "Rechazado"}
+            </span>
+          ) : null}
           <div className="trackCardHead">
             <div>
               <h3>{title}</h3>
@@ -116,7 +185,9 @@ function TrackCard({
           <form className="trackReviewForm" onSubmit={handleSubmit}>
             <div className="trackApprovalRow">
               <button
-                className={`trackApprovalButton ${approval === "approved" ? "trackApprovalButtonActive" : ""}`}
+                className={`trackApprovalButton trackApprovalButtonApprove ${
+                  approval === "approved" ? "trackApprovalButtonActive" : ""
+                }`}
                 type="button"
                 onClick={() => setApproval("approved")}
               >
@@ -140,11 +211,11 @@ function TrackCard({
 
             <div className="trackReviewMeta">
               <span>{lastUpdate}</span>
-              {saved ? <span>Guardado local</span> : <span>Sin enviar</span>}
+              {saved ? <span>{submitMessage ?? "Guardado"}</span> : <span>Sin enviar</span>}
             </div>
 
-            <button className="trackSubmitButton" type="submit">
-              Submit
+            <button className="trackSubmitButton" type="submit" disabled={isSubmitting}>
+              {isSubmitting ? "Enviando..." : "Submit"}
             </button>
           </form>
         </div>

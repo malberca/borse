@@ -922,6 +922,29 @@ details summary {
   pointer-events: none;
 }
 
+.trackReviewRibbon {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 3;
+  padding: 8px 11px;
+  border-radius: 999px;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+}
+
+.trackReviewRibbonApproved {
+  background: linear-gradient(135deg, #2f7f67, #5ec7a7);
+}
+
+.trackReviewRibbonRejected {
+  background: linear-gradient(135deg, #a13f3f, #dd6b6b);
+}
+
 .trackCardFaceBack {
   position: absolute;
   inset: 0;
@@ -1039,9 +1062,18 @@ details summary {
   background: #fff7f5;
 }
 
-.trackApprovalButtonActive {
-  border-color: rgba(117, 98, 255, 0.34);
-  box-shadow: inset 0 0 0 1px rgba(117, 98, 255, 0.2);
+.trackApprovalButtonApprove.trackApprovalButtonActive {
+  border-color: rgba(47, 127, 103, 0.42);
+  background: linear-gradient(135deg, #2f7f67, #5ec7a7);
+  color: #fff;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+}
+
+.trackApprovalButtonReject.trackApprovalButtonActive {
+  border-color: rgba(161, 63, 63, 0.4);
+  background: linear-gradient(135deg, #a13f3f, #dd6b6b);
+  color: #fff;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
 }
 
 .trackCommentBox {
@@ -1072,6 +1104,11 @@ details summary {
   color: #fff;
   font-weight: 700;
   cursor: pointer;
+}
+
+.trackSubmitButton:disabled {
+  opacity: 0.7;
+  cursor: wait;
 }
 
 .trackArtwork img,
