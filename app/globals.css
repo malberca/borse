@@ -1813,6 +1813,24 @@ details summary {
   }
 }
 
+@keyframes manuscriptArtifactFloatA {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) rotate(-3deg);
+  }
+  50% {
+    transform: translate3d(0, -28px, 0) rotate(2deg);
+  }
+}
+
+@keyframes manuscriptArtifactFloatB {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) rotate(3deg);
+  }
+  50% {
+    transform: translate3d(0, 22px, 0) rotate(-2deg);
+  }
+}
+
 .manuscriptVignette,
 .manuscriptTexture {
   position: fixed;
@@ -1843,11 +1861,67 @@ details summary {
   z-index: 1;
 }
 
+.manuscriptArtifacts {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.manuscriptOverlayArtifacts {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.manuscriptArtifact {
+  position: absolute;
+  display: block;
+  opacity: 0.2;
+  filter: sepia(0.48) saturate(0.72) contrast(0.96);
+  transform-origin: center;
+}
+
+.manuscriptArtifactFeather {
+  top: 10%;
+  left: -24px;
+  width: clamp(140px, 16vw, 240px);
+  animation: manuscriptArtifactFloatA 12s ease-in-out infinite;
+}
+
+.manuscriptArtifactGliph {
+  top: 18%;
+  right: -80px;
+  width: clamp(220px, 24vw, 360px);
+  opacity: 0.16;
+  animation: manuscriptArtifactFloatB 16s ease-in-out infinite;
+}
+
+.manuscriptArtifactWomen {
+  bottom: 8%;
+  left: -36px;
+  width: clamp(200px, 22vw, 340px);
+  opacity: 0.15;
+  animation: manuscriptArtifactFloatB 15s ease-in-out infinite;
+}
+
+.manuscriptArtifactBaculo {
+  right: max(-8px, calc((100vw - min(860px, 100%)) / 2 - 40px));
+  top: 18%;
+  width: clamp(360px, 31vw, 560px);
+  opacity: 0.28;
+  animation: manuscriptArtifactFloatA 13s ease-in-out infinite;
+  z-index: 1;
+}
+
 .manuscriptAudioWidget {
   position: fixed;
   right: 20px;
   bottom: 20px;
-  z-index: 2;
+  z-index: 3;
   width: min(320px, calc(100vw - 24px));
 }
 
@@ -1936,6 +2010,27 @@ details summary {
     0 24px 80px rgba(20, 14, 8, 0.26),
     inset 0 1px 0 rgba(255, 255, 255, 0.46),
     inset 0 0 0 1px rgba(137, 106, 67, 0.08);
+}
+
+.manuscriptBook > * {
+  position: relative;
+  z-index: 1;
+}
+
+.manuscriptBookArtifact {
+  position: absolute;
+  display: block;
+  z-index: 0;
+  pointer-events: none;
+  filter: sepia(0.42) saturate(0.7) contrast(0.96);
+}
+
+.manuscriptBookArtifactFeatherTwo {
+  top: 46%;
+  left: -34px;
+  width: clamp(300px, 30vw, 460px);
+  opacity: 0.09;
+  animation: manuscriptArtifactFloatB 14s ease-in-out infinite;
 }
 
 .manuscriptHero {
@@ -2087,6 +2182,34 @@ details summary {
     margin-bottom: 14px;
   }
 
+  .manuscriptArtifacts {
+    opacity: 0.72;
+  }
+
+  .manuscriptArtifactFeather {
+    top: 8%;
+    left: -44px;
+    width: 140px;
+  }
+
+  .manuscriptArtifactGliph {
+    top: 12%;
+    right: -72px;
+    width: 170px;
+  }
+
+  .manuscriptArtifactWomen {
+    bottom: 20%;
+    left: -54px;
+    width: 160px;
+  }
+
+  .manuscriptArtifactBaculo {
+    right: -56px;
+    top: 28%;
+    width: 240px;
+  }
+
   .manuscriptAudioWidget {
     right: 12px;
     bottom: 12px;
@@ -2105,6 +2228,12 @@ details summary {
   .manuscriptBook {
     padding: 26px 20px 30px;
     border-radius: 24px;
+  }
+
+  .manuscriptBookArtifactFeatherTwo {
+    top: 54%;
+    left: -28px;
+    width: 220px;
   }
 
   .manuscriptHero {

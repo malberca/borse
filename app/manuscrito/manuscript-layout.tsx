@@ -9,6 +9,14 @@ export function ManuscriptLayout() {
     <main className="manuscriptPage">
       <div className="manuscriptVignette" aria-hidden="true" />
       <div className="manuscriptTexture" aria-hidden="true" />
+      <div className="manuscriptArtifacts" aria-hidden="true">
+        <img className="manuscriptArtifact manuscriptArtifactFeather" src="/img/manuscrito_feather.png" alt="" />
+        <img className="manuscriptArtifact manuscriptArtifactGliph" src="/img/manuscrito_gliph.png" alt="" />
+        <img className="manuscriptArtifact manuscriptArtifactWomen" src="/img/manuscrito_women.png" alt="" />
+      </div>
+      <div className="manuscriptOverlayArtifacts" aria-hidden="true">
+        <img className="manuscriptArtifact manuscriptArtifactBaculo" src="/img/manuscrito_baculo.png" alt="" />
+      </div>
 
       <aside className="manuscriptAudioWidget" aria-label="Musica recomendada para la lectura">
         <div className="manuscriptAudioCard">
@@ -34,6 +42,7 @@ export function ManuscriptLayout() {
       </header>
 
       <article className="manuscriptBook">
+        <img className="manuscriptBookArtifact manuscriptBookArtifactFeatherTwo" src="/img/manuscrito_feather2.png" alt="" aria-hidden="true" />
         <header className="manuscriptHero">
           <span className="manuscriptLabel">{manuscriptIntro.label}</span>
           <h1>{manuscriptIntro.title}</h1>
