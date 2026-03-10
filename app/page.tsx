@@ -38,6 +38,7 @@ function TrackCard({
   const [rowId, setRowId] = useState<number | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitMessage, setSubmitMessage] = useState<string | null>(null);
+  const isLocked = saved;
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -83,6 +84,7 @@ function TrackCard({
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (typeof window === "undefined") return;
+    if (isLocked) return;
 
     setIsSubmitting(true);
     setSubmitMessage(null);
@@ -216,6 +218,7 @@ function TrackCard({
                   approval === "approved" ? "trackApprovalButtonActive" : ""
                 }`}
                 type="button"
+                disabled={isLocked}
                 onClick={() => setApproval("approved")}
               >
                 Approve
@@ -223,6 +226,7 @@ function TrackCard({
               <button
                 className={`trackApprovalButton trackApprovalButtonReject ${approval === "rejected" ? "trackApprovalButtonActive" : ""}`}
                 type="button"
+                disabled={isLocked}
                 onClick={() => setApproval("rejected")}
               >
                 Reject
@@ -233,17 +237,22 @@ function TrackCard({
               className="trackCommentBox"
               placeholder="Comentario de revisión"
               value={comment}
+              readOnly={isLocked}
               onChange={(event) => setComment(event.target.value)}
             />
 
             <div className="trackReviewMeta">
               <span>{lastUpdate}</span>
-              {saved ? <span>{submitMessage ?? "Guardado"}</span> : <span>Sin enviar</span>}
+              {saved ? <span>{submitMessage ?? "Review enviada"}</span> : <span>Sin enviar</span>}
             </div>
 
-            <button className="trackSubmitButton" type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Enviando..." : "Submit"}
-            </button>
+            {isLocked ? (
+              <div className="trackLockedNote">Revision cerrada. Esta card ya no admite nuevos cambios.</div>
+            ) : (
+              <button className="trackSubmitButton" type="submit" disabled={isSubmitting}>
+                {isSubmitting ? "Enviando..." : "Submit"}
+              </button>
+            )}
           </form>
         </div>
       </div>
@@ -353,6 +362,18 @@ export default function Page() {
             El EP avanza desde el conflicto interno hacia una forma de percepción más precisa:
             lucha, ruptura, rastro y revelación dentro de un mismo sistema.
           </p>
+          <div className="tracksGuide">
+            <strong>Cómo validar y guardar</strong>
+            <ol>
+              <li>Hacé click sobre una card para darla vuelta y abrir el panel de revisión.</li>
+              <li>Elegí `Approve` o `Reject` y dejá tu comentario antes de enviar.</li>
+              <li>Presioná `Submit` para guardar la decisión. Una vez enviada, la review queda cerrada.</li>
+            </ol>
+            <p>
+              Para ver cada imagen en grande y leer el proceso completo, usá el menú flotante de la derecha:
+              cada cuadrado corresponde a un track del EP. Cualquier duda: martin@ma-no.work
+            </p>
+          </div>
         </div>
         <div className="tracksGrid">
           {tracks.map((track) => (

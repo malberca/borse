@@ -995,15 +995,20 @@ details summary {
 }
 
 .trackStatus {
-  padding: 7px 11px;
-  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  min-height: 88px;
+  padding: 12px 8px;
+  border-radius: 22px;
   font-size: 9px;
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   border: 0;
-  white-space: nowrap;
   line-height: 1;
+  writing-mode: vertical-rl;
+  text-orientation: upright;
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
 }
 
@@ -1015,6 +1020,38 @@ details summary {
 .trackStatusPending {
   color: #ffffff;
   background: linear-gradient(135deg, #b86d3f, #d6914f);
+}
+
+.tracksGuide {
+  margin-top: 14px;
+  padding: 16px 18px;
+  border-radius: 18px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.tracksGuide strong {
+  display: block;
+  margin-bottom: 10px;
+  color: var(--ink);
+}
+
+.tracksGuide ol {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 8px;
+}
+
+.tracksGuide li,
+.tracksGuide p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.tracksGuide p {
+  margin-top: 12px;
 }
 
 .trackReviewHead {
@@ -1069,6 +1106,10 @@ details summary {
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
 }
 
+.trackApprovalButton:disabled {
+  cursor: default;
+}
+
 .trackApprovalButtonReject.trackApprovalButtonActive {
   border-color: rgba(161, 63, 63, 0.4);
   background: linear-gradient(135deg, #a13f3f, #dd6b6b);
@@ -1086,6 +1127,12 @@ details summary {
   color: #171717;
   padding: 14px;
   font: inherit;
+}
+
+.trackCommentBox[readonly] {
+  background: #f2f2ee;
+  color: #404040;
+  cursor: default;
 }
 
 .trackReviewMeta {
@@ -1109,6 +1156,15 @@ details summary {
 .trackSubmitButton:disabled {
   opacity: 0.7;
   cursor: wait;
+}
+
+.trackLockedNote {
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: #ecece7;
+  color: #4b4b4b;
+  font-size: 13px;
+  line-height: 1.5;
 }
 
 .trackArtwork img,
