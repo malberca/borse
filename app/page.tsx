@@ -4,18 +4,45 @@ import { FormEvent, useEffect, useState } from "react";
 
 import { AccessGate } from "./access-gate";
 import { processTrackNav, projectTimeline, tracks } from "./borse-data";
-const stickyNavItems = [
-  { id: "cuatro-enemigos", label: "Cuatro Enemigos", short: "CE", href: "/proceso-creativo/cuatro-enemigos" },
-  { id: "los-giles", label: "Los Giles", short: "LG", href: "/proceso-creativo/los-giles" },
-  { id: "nunca-mas", label: "Nunca Más", short: "NM", href: "/proceso-creativo/nunca-mas" },
-  { id: "vestigios", label: "Vestigios", short: "V", href: "/proceso-creativo/vestigios" },
-];
+
+const trackProgressSchedule: Record<string, { start: string; end: string }> = {
+  "cuatro-enemigos": {
+    start: "2026-03-18T10:00:00-03:00",
+    end: "2026-03-27T23:00:00-03:00",
+  },
+  "los-giles": {
+    start: "2026-03-18T10:00:00-03:00",
+    end: "2026-03-27T23:00:00-03:00",
+  },
+  "nunca-mas": {
+    start: "2026-03-18T10:00:00-03:00",
+    end: "2026-03-27T23:00:00-03:00",
+  },
+  vestigios: {
+    start: "2026-03-18T10:00:00-03:00",
+    end: "2026-03-27T23:00:00-03:00",
+  },
+};
+
+function getTrackProgress(slug: string) {
+  const schedule = trackProgressSchedule[slug];
+  if (!schedule) return 0;
+
+  const start = new Date(schedule.start).getTime();
+  const end = new Date(schedule.end).getTime();
+  const now = Date.now();
+
+  if (!Number.isFinite(start) || !Number.isFinite(end) || end <= start) return 0;
+  if (now <= start) return 0;
+  if (now >= end) return 100;
+
+  return ((now - start) / (end - start)) * 100;
+}
 
 function TrackCard({
   slug,
   title,
   subtitle,
-  descriptor,
   status,
   image,
   reviewer,
@@ -24,7 +51,6 @@ function TrackCard({
   slug: string;
   title: string;
   subtitle: string;
-  descriptor: string;
   status: string;
   image: string | null;
   reviewer: string;
@@ -38,7 +64,9 @@ function TrackCard({
   const [rowId, setRowId] = useState<number | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitMessage, setSubmitMessage] = useState<string | null>(null);
+  const [progress, setProgress] = useState(() => getTrackProgress(slug));
   const isLocked = saved;
+  const progressValue = Math.round(progress);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -79,7 +107,19 @@ function TrackCard({
     return () => {
       cancelled = true;
     };
-  }, [storageKey]);
+  }, [storageKey, slug]);
+
+  useEffect(() => {
+    setProgress(getTrackProgress(slug));
+
+    const interval = window.setInterval(() => {
+      setProgress(getTrackProgress(slug));
+    }, 60000);
+
+    return () => {
+      window.clearInterval(interval);
+    };
+  }, [slug]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -163,38 +203,28 @@ function TrackCard({
       <div className="trackCardInner">
         <div className="trackCardFace trackCardFaceFront">
           <button className="trackFlipHotspot" type="button" aria-label={`Revisar ${title}`} onClick={() => setIsFlipped(true)} />
-          {saved && approval ? (
-            <span
-              className={`trackReviewRibbon ${
-                approval === "approved" ? "trackReviewRibbonApproved" : "trackReviewRibbonRejected"
-              }`}
-            >
-              {approval === "approved" ? "Aprobado" : "Rechazado"}
-            </span>
-          ) : null}
+          <span className="trackReviewRibbon trackReviewRibbonApproved">Aprobado</span>
           <div className="trackCardHead">
             <div>
               <h3>{title}</h3>
               <p className="trackMeta">{subtitle}</p>
             </div>
-            <span className={`trackStatus ${status === "Final" ? "trackStatusFinal" : "trackStatusPending"}`}>
-              {status}
-            </span>
           </div>
           <div className="trackArtwork">
             {image ? (
               <>
                 <img src={image} alt={`${title} artwork`} />
-                <div className="trackArtworkOverlay">
-                  <p>{descriptor}</p>
+                <div className="trackProgressPillCopy">
+                  <span>COMPLETED</span>
+                  <strong>{progressValue}%</strong>
+                </div>
+                <div className="trackProgressPill" aria-hidden="true">
+                  <span className="trackProgressPillFill" style={{ width: `${progress}%` }} />
                 </div>
               </>
             ) : (
               <div className="trackPlaceholder">
                 <span>En proceso</span>
-                <div className="trackArtworkOverlay">
-                  <p>{descriptor}</p>
-                </div>
               </div>
             )}
           </div>
@@ -246,6 +276,14 @@ function TrackCard({
               {saved ? <span>{submitMessage ?? "Review enviada"}</span> : <span>Sin enviar</span>}
             </div>
 
+            <div className="trackProgressCopy">
+              <span>COMPLETED</span>
+              <strong>{progressValue}%</strong>
+            </div>
+            <div className="trackProgressBar" aria-hidden="true">
+              <span className="trackProgressBarFill" style={{ width: `${progress}%` }} />
+            </div>
+
             {isLocked ? (
               <div className="trackLockedNote">Revision cerrada. Esta card ya no admite nuevos cambios.</div>
             ) : (
@@ -266,8 +304,8 @@ export default function Page() {
       <main className="page">
       <div className="marquee" aria-label="Estado de actualización">
         <div className="marqueeTrack">
-          <span>Proyecto en desarrollo. Próxima actualización estimada 09/03/2026 10pm aprox.</span>
-          <span>Proyecto en desarrollo. Próxima actualización estimada 09/03/2026 10pm aprox.</span>
+          <span>Revision de cambios en curso · entrega y pre entrega de tapa estimada para el jueves 19/03/2026 a las 23:00.</span>
+          <span>Revision de cambios en curso · entrega y pre entrega de tapa estimada para el jueves 19/03/2026 a las 23:00.</span>
         </div>
       </div>
 
@@ -303,7 +341,7 @@ export default function Page() {
         <a className="controlButton" href="/manuscrito">Manuscrito</a>
         <a className="controlButton" href="/proceso-creativo/cuatro-enemigos">Cuatro Enemigos</a>
         <a className="controlButton" href="/proceso-creativo/los-giles">Los Giles</a>
-        <a className="controlButton" href="/proceso-creativo/nunca-mas">Nunca Más</a>
+        <a className="controlButton" href="/proceso-creativo/nunca-mas">Nunca más me iré</a>
         <a className="controlButton" href="/proceso-creativo/vestigios">Vestigios</a>
         <a className="controlButton" href="/proceso-creativo#archivos-finales">Descargas</a>
       </nav>
@@ -311,16 +349,28 @@ export default function Page() {
       <aside className="stickyDock" aria-label="Navegación rápida">
         <div className="stickyDockRail">
           {processTrackNav.map((item) => (
-            <a
-              key={item.slug}
-              className={`stickyDockButton stickyDockButton${item.tone[0].toUpperCase()}${item.tone.slice(1)}`}
-              href={item.href}
-              aria-label={item.label}
-              title={item.label}
-            >
-              {item.image ? <img src={item.image} alt="" /> : <span>{item.short}</span>}
-              <small>{item.label}</small>
-            </a>
+            item.disabled ? (
+              <span
+                key={item.slug}
+                className={`stickyDockButton stickyDockButton${item.tone[0].toUpperCase()}${item.tone.slice(1)} stickyDockButtonDisabled`}
+                aria-label={`${item.label} desactivado`}
+                title={`${item.label} desactivado`}
+              >
+                {item.image ? <img src={item.image} alt="" /> : <span>{item.short}</span>}
+                <small>{item.label}</small>
+              </span>
+            ) : (
+              <a
+                key={item.slug}
+                className={`stickyDockButton stickyDockButton${item.tone[0].toUpperCase()}${item.tone.slice(1)}`}
+                href={item.href}
+                aria-label={item.label}
+                title={item.label}
+              >
+                {item.image ? <img src={item.image} alt="" /> : <span>{item.short}</span>}
+                <small>{item.label}</small>
+              </a>
+            )
           ))}
         </div>
       </aside>
@@ -331,7 +381,7 @@ export default function Page() {
             <span className="eyebrow">Seguimiento</span>
             <h2>Estado del proyecto</h2>
           </div>
-          <span className="timelineBadge">Pre-entrega · 09/03/2026</span>
+          <span className="timelineBadge">Revision de cambios · 19/03/2026 · 23:00</span>
         </div>
 
         <div className="projectTimelineRail" aria-hidden="true">
@@ -346,6 +396,7 @@ export default function Page() {
               } projectMilestoneReveal projectMilestoneDelay-${index + 1}`}
               key={`${item.date}-${item.title}`}
             >
+              <span className="projectMilestoneIndex">{String.fromCharCode(65 + index)}</span>
               <span className="projectMilestoneDot" />
               <span className="projectMilestoneDate">{item.date}</span>
               <strong>{item.title}</strong>

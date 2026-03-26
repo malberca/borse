@@ -34,26 +34,47 @@ export function AccessGate({ children }: { children: ReactNode }) {
   if (!isUnlocked) {
     return (
       <main className="loginScreen">
-        <section className="loginCard">
-          <div className="loginBrand">
-            <img src="/img/mano-logo26-w.svg" alt="MA-NO Consultora" />
+        <div className="loginScreenInner">
+          <div className="loginMarquee" aria-hidden="true">
+            <div className="loginMarqueeTrack">
+              <span>Acceso privado de clientes · MA-NO Consultora · BORSE · Presentacion interna</span>
+              <span>Acceso privado de clientes · MA-NO Consultora · BORSE · Presentacion interna</span>
+            </div>
           </div>
-          <span className="loginEyebrow">Acceso de clientes · MA-NO Consultora</span>
-          <span className="loginVersion">version 2.0</span>
-          <h1>Ingreso privado</h1>
-          <p>Ingresá la password para ver la presentación de Borse.</p>
-          <form className="loginForm" onSubmit={handleSubmit}>
-            <input
-              className="loginInput"
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-            />
-            <button className="loginButton" type="submit">Entrar</button>
-          </form>
-          {error ? <p className="loginError">{error}</p> : null}
-        </section>
+
+          <section className="loginCard">
+            <div className="loginBrandRow">
+              <div className="loginBrandSymbol">
+                <img src="/img/logo_hands.webp" alt="MA-NO" />
+              </div>
+              <div className="loginBrand">
+                <img src="/img/mano-logo26-w.svg" alt="MA-NO Consultora" />
+              </div>
+            </div>
+            <span className="loginEyebrow">Acceso de clientes · MA-NO Consultora</span>
+            <span className="loginVersion">version 2.0</span>
+            <h1>Ingreso privado</h1>
+            <p>Ingresá la password para ver la presentación de Borse.</p>
+            <form className="loginForm" onSubmit={handleSubmit}>
+              <input
+                className="loginInput"
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+              />
+              <button className="loginButton" type="submit">Entrar</button>
+            </form>
+            {error ? <p className="loginError">{error}</p> : null}
+          </section>
+
+          <div className="loginMarquee" aria-hidden="true">
+            <div className="loginMarqueeTrack">
+              <span>Acceso privado de clientes · MA-NO Consultora · BORSE · Presentacion interna</span>
+              <span>Acceso privado de clientes · MA-NO Consultora · BORSE · Presentacion interna</span>
+            </div>
+          </div>
+        </div>
       </main>
     );
   }

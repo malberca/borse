@@ -41,6 +41,12 @@ export const projectTimeline = [
     date: "09/03/2026",
     title: "Pre-entrega acordada",
     body: "Unir todo el sistema. Generar archivos. Estructurar historia.",
+    status: "done",
+  },
+  {
+    date: "19/03/2026 · 23:00",
+    title: "Revision de cambios",
+    body: "Entrega de cambios y pre entrega de tapa.",
     status: "current",
   },
 ];
@@ -88,6 +94,33 @@ export const finalFiles = [
   { label: "Canvas", href: "https://drive.google.com/drive/folders/1_7Wurl_codomMVCZdIEIovzRJxBoHW4X?usp=drive_link" },
 ];
 
+export const symbologySystem = [
+  {
+    track: "Cuatro Enemigos",
+    icon: "/img/icons/glyph-eye.svg",
+    title: "Ojo del umbral",
+    body: "Icono para la apertura de conciencia y la estructura central del sistema de los cuatro enemigos.",
+  },
+  {
+    track: "Los Giles",
+    icon: "/img/icons/glyph-loop.svg",
+    title: "Ruta de la tribu",
+    body: "Lectura de viaje, marcha colectiva y repeticion del movimiento humano hacia el horizonte.",
+  },
+  {
+    track: "Nunca más me iré",
+    icon: "/img/icons/glyph-threshold.svg",
+    title: "Puerta de mutacion",
+    body: "Marca del cruce sin regreso: la vieja forma cae y el nuevo hombre aparece.",
+  },
+  {
+    track: "Vestigios",
+    icon: "/img/icons/glyph-core.svg",
+    title: "Nucleo ritual",
+    body: "Simbolo para el altar, la energia residual y la memoria de la batalla espiritual.",
+  },
+];
+
 export const tracks = [
   {
     slug: "cuatro-enemigos",
@@ -111,7 +144,7 @@ export const tracks = [
   },
   {
     slug: "nunca-mas",
-    title: "Nunca Más",
+    title: "Nunca más me iré",
     subtitle: "Ruptura y transformación",
     descriptor: "El punto de quiebre: dejar atrás la forma anterior para mutar.",
     status: "Borrador",
@@ -158,7 +191,7 @@ export const processModules = [
   },
   {
     id: "nunca-mas",
-    title: "Nunca Más",
+    title: "Nunca más me iré",
     eyebrow: "Módulo 05",
     descriptor: "Ruptura, mudanza interior y abandono de la forma anterior.",
   },
@@ -175,6 +208,16 @@ export type ProcessTrackPage = {
   currentState: string[];
   nextSteps: string[];
   gallery?: Array<{ src: string; alt: string }>;
+  revision?: {
+    summary: string;
+    items: string[];
+    milestones: Array<{
+      date: string;
+      title: string;
+      body: string;
+      status: "done" | "current" | "upcoming";
+    }>;
+  };
 };
 
 export const processTrackPages: ProcessTrackPage[] = [
@@ -275,7 +318,7 @@ export const processTrackPages: ProcessTrackPage[] = [
   },
   {
     slug: "nunca-mas",
-    title: "Nunca Más",
+    title: "Nunca más me iré",
     subtitle: "Ruptura y transformación",
     status: "EN PROCESO",
     concept: [
@@ -408,7 +451,7 @@ export const processTrackNav = [
   },
   {
     slug: "nunca-mas",
-    label: "Nunca Más",
+    label: "Nunca más me iré",
     short: "NM",
     href: "/proceso-creativo/nunca-mas",
     image: "/img/BORSE_IMGS/nunca_masA.webp",
@@ -429,5 +472,14 @@ export const processTrackNav = [
     href: "/manuscrito",
     image: "/img/manuscrito.webp",
     tone: "gold",
+  },
+  {
+    slug: "simbologia",
+    label: "Simbología",
+    short: "S",
+    href: "/simbologia",
+    image: "/img/simbologia.webp",
+    tone: "emerald",
+    disabled: true,
   },
 ];

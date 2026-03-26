@@ -5,7 +5,7 @@ const processNav = [
   { href: "/proceso-creativo", label: "Overview" },
   { href: "/proceso-creativo/cuatro-enemigos", label: "Cuatro Enemigos" },
   { href: "/proceso-creativo/los-giles", label: "Los Giles" },
-  { href: "/proceso-creativo/nunca-mas", label: "Nunca Más" },
+  { href: "/proceso-creativo/nunca-mas", label: "Nunca más me iré" },
   { href: "/proceso-creativo/vestigios", label: "Vestigios" },
   { href: "/proceso-creativo#archivos-finales", label: "Descargas" },
 ];
@@ -40,7 +40,16 @@ export function ProcessTrackPageView({ page }: { page: ProcessTrackPage }) {
           <div className="processStickyRail">
             {processTrackNav.map((item) => {
               const active = item.slug === page.slug;
-              return (
+              return item.disabled ? (
+                <span
+                  key={item.slug}
+                  className={`processStickyButton processStickyButton${item.tone[0].toUpperCase()}${item.tone.slice(1)} processStickyButtonDisabled`}
+                  aria-label={`${item.label} desactivado`}
+                  title={`${item.label} desactivado`}
+                >
+                  {item.image ? <img src={item.image} alt="" /> : <span>{item.short}</span>}
+                </span>
+              ) : (
                 <a
                   key={item.slug}
                   className={`processStickyButton processStickyButton${item.tone[0].toUpperCase()}${item.tone.slice(1)} ${active ? "processStickyButtonActive" : ""}`}
@@ -112,6 +121,34 @@ export function ProcessTrackPageView({ page }: { page: ProcessTrackPage }) {
               </div>
             ) : null}
           </article>
+
+          {page.revision ? (
+            <article className="panel reveal reveal-5">
+              <div className="sectionIntro">
+                <span className="eyebrow">Revision de cambios</span>
+                <h2>Correcciones del cliente</h2>
+              </div>
+              <p className="processRevisionLead">{page.revision.summary}</p>
+              <ul className="processRevisionList">
+                {page.revision.items.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+              <div className="processRevisionTimeline">
+                {page.revision.milestones.map((item) => (
+                  <article
+                    className={`processRevisionMilestone processRevisionMilestone${item.status[0].toUpperCase()}${item.status.slice(1)}`}
+                    key={`${item.date}-${item.title}`}
+                  >
+                    <span className="processRevisionDot" />
+                    <span className="processRevisionDate">{item.date}</span>
+                    <strong>{item.title}</strong>
+                    <p>{item.body}</p>
+                  </article>
+                ))}
+              </div>
+            </article>
+          ) : null}
 
           <section className="processSplitGrid">
             <article className="panel reveal reveal-5">

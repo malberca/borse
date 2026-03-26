@@ -25,15 +25,26 @@ export default function ProcesoCreativoPage() {
         <aside className="processStickyDock" aria-label="Tracks del EP">
           <div className="processStickyRail">
             {processTrackNav.map((item) => (
-              <a
-                key={item.slug}
-                className={`processStickyButton processStickyButton${item.tone[0].toUpperCase()}${item.tone.slice(1)}`}
-                href={item.href}
-                aria-label={item.label}
-                title={item.label}
-              >
-                {item.image ? <img src={item.image} alt="" /> : <span>{item.short}</span>}
-              </a>
+              item.disabled ? (
+                <span
+                  key={item.slug}
+                  className={`processStickyButton processStickyButton${item.tone[0].toUpperCase()}${item.tone.slice(1)} processStickyButtonDisabled`}
+                  aria-label={`${item.label} desactivado`}
+                  title={`${item.label} desactivado`}
+                >
+                  {item.image ? <img src={item.image} alt="" /> : <span>{item.short}</span>}
+                </span>
+              ) : (
+                <a
+                  key={item.slug}
+                  className={`processStickyButton processStickyButton${item.tone[0].toUpperCase()}${item.tone.slice(1)}`}
+                  href={item.href}
+                  aria-label={item.label}
+                  title={item.label}
+                >
+                  {item.image ? <img src={item.image} alt="" /> : <span>{item.short}</span>}
+                </a>
+              )
             ))}
           </div>
         </aside>
@@ -43,7 +54,7 @@ export default function ProcesoCreativoPage() {
           <a className="controlButton controlButtonActive" href="/proceso-creativo">Overview</a>
           <a className="controlButton" href="/proceso-creativo/cuatro-enemigos">Cuatro Enemigos</a>
           <a className="controlButton" href="/proceso-creativo/los-giles">Los Giles</a>
-          <a className="controlButton" href="/proceso-creativo/nunca-mas">Nunca Más</a>
+          <a className="controlButton" href="/proceso-creativo/nunca-mas">Nunca más me iré</a>
           <a className="controlButton" href="/proceso-creativo/vestigios">Vestigios</a>
           <a className="controlButton" href="#archivos-finales">Descargas</a>
         </nav>
@@ -185,7 +196,7 @@ export default function ProcesoCreativoPage() {
             <article className="panel reveal reveal-6" id="nunca-mas">
               <div className="sectionIntro">
                 <span className="eyebrow">Módulo 05</span>
-                <h2>Nunca Más</h2>
+                <h2>Nunca más me iré</h2>
               </div>
               <div className="processPlaceholderPanel">
                 <p>
