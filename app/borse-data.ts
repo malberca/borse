@@ -47,6 +47,12 @@ export const projectTimeline = [
     date: "19/03/2026 · 23:00",
     title: "Revision de cambios",
     body: "Entrega de cambios y pre entrega de tapa.",
+    status: "done",
+  },
+  {
+    date: "27/03/2026 · 23:00",
+    title: "Pre-entrega de iconografía y tapa final",
+    body: "Entrega tentativa de iconografía y pre-entrega de tapa final.",
     status: "current",
   },
 ];
@@ -128,7 +134,7 @@ export const tracks = [
     subtitle: "Núcleo conceptual del EP",
     descriptor: "Miedo → Claridad → Poder → Vejez → Ver",
     status: "Final",
-    image: "/img/cuatro_enemigos.webp",
+    image: "/img/BORSE_IMGS/cuatroenemigos.webp",
     reviewer: "Mariano Borserini",
     lastUpdate: "2026-03-09",
   },
@@ -138,7 +144,7 @@ export const tracks = [
     subtitle: "Dimensión humana / tribal",
     descriptor: "Muchos caminan toda la vida sin despertar. Otros descubren que el camino también es una batalla.",
     status: "Borrador",
-    image: "/img/BORSE_IMGS/los_gilesA.webp",
+    image: "/img/BORSE_IMGS/logiles.webp",
     reviewer: "Mariano Borserini",
     lastUpdate: "2026-03-09",
   },
@@ -148,7 +154,7 @@ export const tracks = [
     subtitle: "Ruptura y transformación",
     descriptor: "El punto de quiebre: dejar atrás la forma anterior para mutar.",
     status: "Borrador",
-    image: "/img/BORSE_IMGS/nunca_masB.png",
+    image: "/img/BORSE_IMGS/nuncamasmeire.webp",
     reviewer: "Mariano Borserini",
     lastUpdate: "2026-03-09",
   },
@@ -158,9 +164,20 @@ export const tracks = [
     subtitle: "Huellas de la guerra ritual",
     descriptor: "Lo que queda después del conflicto interno: símbolos, materia y rastro.",
     status: "Borrador",
-    image: "/img/BORSE_IMGS/Vestigios_B.webp",
+    image: "/img/BORSE_IMGS/vestigios.webp",
     reviewer: "Mariano Borserini",
     lastUpdate: "2026-03-09",
+  },
+  {
+    slug: "asi-veras",
+    title: "Asi Veras",
+    subtitle: "Pieza principal del EP",
+    descriptor: "La tapa principal dentro del sistema visual del proyecto.",
+    status: "Final",
+    image: "/img/BORSE_IMGS/asiveras.webp",
+    reviewer: "Mariano Borserini",
+    lastUpdate: "2026-03-27",
+    featured: true,
   },
 ];
 
@@ -194,6 +211,12 @@ export const processModules = [
     title: "Nunca más me iré",
     eyebrow: "Módulo 05",
     descriptor: "Ruptura, mudanza interior y abandono de la forma anterior.",
+  },
+  {
+    id: "asi-veras",
+    title: "ASÍ VERÁS",
+    eyebrow: "Módulo 06",
+    descriptor: "Cierre ritual del sistema: una secuencia que activa una transformación.",
   },
 ];
 
@@ -264,6 +287,9 @@ export const processTrackPages: ProcessTrackPage[] = [
     nextSteps: [
       "Integrar este sistema con el resto de los temas del EP.",
     ],
+    gallery: [
+      { src: "/img/BORSE_IMGS/cuatroenemigos.webp", alt: "Cuatro Enemigos visual principal" },
+    ],
   },
   {
     slug: "los-giles",
@@ -312,8 +338,7 @@ export const processTrackPages: ProcessTrackPage[] = [
       "Desarrollar visual que represente idea de viaje interior.",
     ],
     gallery: [
-      { src: "/img/BORSE_IMGS/los_gilesA.png", alt: "Los Giles exploración visual A" },
-      { src: "/img/BORSE_IMGS/los_gilesB.png", alt: "Los Giles exploración visual B" },
+      { src: "/img/BORSE_IMGS/logiles.webp", alt: "Los Giles visual principal" },
     ],
   },
   {
@@ -371,8 +396,7 @@ export const processTrackPages: ProcessTrackPage[] = [
       "Explorar visual de transición / ascenso.",
     ],
     gallery: [
-      { src: "/img/BORSE_IMGS/nunca_masA.png", alt: "Nunca Más exploración visual A" },
-      { src: "/img/BORSE_IMGS/nunca_masB.png", alt: "Nunca Más exploración visual B" },
+      { src: "/img/BORSE_IMGS/nuncamasmeire.webp", alt: "Nunca más me iré visual principal" },
     ],
   },
   {
@@ -422,8 +446,71 @@ export const processTrackPages: ProcessTrackPage[] = [
       "Refinar altar ritual y simbolismo chamánico.",
     ],
     gallery: [
-      { src: "/img/BORSE_IMGS/Vestigios_A.jpeg", alt: "Vestigios exploración visual A" },
-      { src: "/img/BORSE_IMGS/Vestigios_B.jpeg", alt: "Vestigios exploración visual B" },
+      { src: "/img/BORSE_IMGS/vestigios.webp", alt: "Vestigios visual principal" },
+    ],
+  },
+  {
+    slug: "asi-veras",
+    title: "ASÍ VERÁS",
+    subtitle: "Ritual de transformación",
+    status: "FINAL",
+    concept: [
+      "No es un concepto.",
+      "No es una estética.",
+      "No es una historia.",
+      "Es un proceso.",
+      "Durante todo el recorrido, nada aparece por azar.",
+      "Cada símbolo, cada escena, cada fragmento responde a una misma estructura invisible: un ritual.",
+      "El umbral abre.",
+      "La espiral prepara.",
+      "La energía irrumpe.",
+      "El círculo contiene.",
+      "Y en el centro... alguien cambia.",
+      "No se trata de entender lo que ves. Se trata de atravesarlo.",
+      "Porque lo que parecía separado -las canciones, los símbolos, las imágenes- en realidad forma parte de un mismo acto.",
+      "Una secuencia.",
+      "Una activación.",
+      "El cuerpo no representa.",
+      "El cuerpo evidencia.",
+      "Algo ocurrió.",
+      "Algo se sostuvo.",
+      "Algo emergió.",
+      "Al final no hay explicación.",
+      "Hay una certeza:",
+      "Nunca fue una suma de partes.",
+      "Siempre fue un ritual.",
+      "Y una vez que lo ves... ya no podés volver atrás.",
+    ],
+    keyLines: [
+      "NO ES UN CONCEPTO",
+      "ES UN PROCESO",
+      "SE TRATA DE ATRAVESARLO",
+      "UNA SECUENCIA",
+      "UNA ACTIVACIÓN",
+      "EL CUERPO EVIDENCIA",
+      "NUNCA FUE UNA SUMA DE PARTES",
+      "SIEMPRE FUE UN RITUAL",
+      "YA NO PODÉS VOLVER ATRÁS",
+    ],
+    explorations: [
+      "Umbral.",
+      "Espiral.",
+      "Energía en irrupción.",
+      "Círculo como contención.",
+      "Cuerpo como evidencia del cambio.",
+      "Tensión entre secuencia y activación.",
+    ],
+    currentState: [
+      "Manifiesto conceptual definido.",
+      "Dirección narrativa consolidada como cierre del recorrido del EP.",
+    ],
+    nextSteps: [
+      "Desarrollar adaptaciones visuales del manifiesto en piezas de comunicación.",
+      "Ajustar la composición final de tapa y aplicaciones editoriales.",
+    ],
+    gallery: [
+      { src: "/img/4simbolos.webp", alt: "Sistema de cuatro símbolos" },
+      { src: "/img/symbol-asiveras.webp", alt: "Símbolo ASÍ VERÁS" },
     ],
   },
 ];
@@ -432,13 +519,21 @@ export const processTrackPagesBySlug = Object.fromEntries(
   processTrackPages.map((item) => [item.slug, item]),
 ) as Record<string, ProcessTrackPage>;
 
-export const processTrackNav = [
+export const processTrackNav: Array<{
+  slug: string;
+  label: string;
+  short: string;
+  href: string;
+  image: string;
+  tone: string;
+  disabled?: boolean;
+}> = [
   {
     slug: "cuatro-enemigos",
     label: "Cuatro Enemigos",
     short: "CE",
     href: "/proceso-creativo/cuatro-enemigos",
-    image: "/img/cuatro_enemigos.webp",
+    image: "/img/icon_cuatroenemigos.webp",
     tone: "gold",
   },
   {
@@ -446,7 +541,7 @@ export const processTrackNav = [
     label: "Los Giles",
     short: "LG",
     href: "/proceso-creativo/los-giles",
-    image: "/img/BORSE_IMGS/los_gilesA.webp",
+    image: "/img/icon_losgiles.webp",
     tone: "blue",
   },
   {
@@ -454,7 +549,7 @@ export const processTrackNav = [
     label: "Nunca más me iré",
     short: "NM",
     href: "/proceso-creativo/nunca-mas",
-    image: "/img/BORSE_IMGS/nunca_masA.webp",
+    image: "/img/icon_nuncamasmeire.webp",
     tone: "emerald",
   },
   {
@@ -462,8 +557,16 @@ export const processTrackNav = [
     label: "Vestigios",
     short: "V",
     href: "/proceso-creativo/vestigios",
-    image: "/img/BORSE_IMGS/Vestigios_B.webp",
+    image: "/img/icon_vestigios.webp",
     tone: "ember",
+  },
+  {
+    slug: "asi-veras",
+    label: "Asi Veras",
+    short: "AV",
+    href: "/proceso-creativo/asi-veras",
+    image: "/img/icon_asiveras.webp",
+    tone: "violet",
   },
   {
     slug: "manuscrito",
@@ -472,14 +575,5 @@ export const processTrackNav = [
     href: "/manuscrito",
     image: "/img/manuscrito.webp",
     tone: "gold",
-  },
-  {
-    slug: "simbologia",
-    label: "Simbología",
-    short: "S",
-    href: "/simbologia",
-    image: "/img/simbologia.webp",
-    tone: "emerald",
-    disabled: true,
   },
 ];

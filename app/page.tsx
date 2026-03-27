@@ -1,6 +1,7 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, KeyboardEvent as ReactKeyboardEvent, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 import { AccessGate } from "./access-gate";
 import { processTrackNav, projectTimeline, tracks } from "./borse-data";
@@ -22,7 +23,18 @@ const trackProgressSchedule: Record<string, { start: string; end: string }> = {
     start: "2026-03-18T10:00:00-03:00",
     end: "2026-03-27T23:00:00-03:00",
   },
+  "asi-veras": {
+    start: "2026-03-18T10:00:00-03:00",
+    end: "2026-03-27T23:00:00-03:00",
+  },
 };
+
+const merchSlides: Array<{ src: string; alt: string; cardClassName?: string }> = [
+  { src: "/img/remera1.webp", alt: "BORSE remera visual 01" },
+  { src: "/img/remera2.webp", alt: "BORSE remera visual 02" },
+  { src: "/img/remera3.webp", alt: "BORSE remera visual 03" },
+  { src: "/img/lp-nobg.webp", alt: "BORSE LP visual", cardClassName: "lpMiniCard" },
+];
 
 function getTrackProgress(slug: string) {
   const schedule = trackProgressSchedule[slug];
@@ -47,6 +59,7 @@ function TrackCard({
   image,
   reviewer,
   lastUpdate,
+  featured = false,
 }: {
   slug: string;
   title: string;
@@ -55,9 +68,11 @@ function TrackCard({
   image: string | null;
   reviewer: string;
   lastUpdate: string;
+  featured?: boolean;
 }) {
   const storageKey = `borse-review-${slug}`;
   const [isFlipped, setIsFlipped] = useState(false);
+  const [isImageOpen, setIsImageOpen] = useState(false);
   const [approval, setApproval] = useState<"approved" | "rejected" | null>(null);
   const [comment, setComment] = useState("");
   const [saved, setSaved] = useState(false);
@@ -80,12 +95,29 @@ function TrackCard({
         });
         const data = await response.json();
 
-        if (!cancelled && response.ok && data.ok && data.record) {
-          setApproval(data.record.approval ?? null);
-          setComment(data.record.reviewer_comment ?? "");
-          setRowId(data.record.id ?? null);
-          setSaved(Boolean(data.record.approval || data.record.reviewer_comment));
-          setSubmitMessage("Cargado desde Baserow.");
+        if (!cancelled && response.ok && data.ok) {
+          if (data.record) {
+            setApproval(data.record.approval ?? null);
+            setComment(data.record.reviewer_comment ?? "");
+            setRowId(data.record.id ?? null);
+            setSaved(Boolean(data.record.approval || data.record.reviewer_comment));
+            window.localStorage.setItem(
+              storageKey,
+              JSON.stringify({
+                approval: data.record.approval ?? null,
+                comment: data.record.reviewer_comment ?? "",
+                rowId: data.record.id ?? null,
+              }),
+            );
+            setSubmitMessage("Cargado desde Baserow.");
+          } else {
+            setApproval(null);
+            setComment("");
+            setRowId(null);
+            setSaved(false);
+            window.localStorage.removeItem(storageKey);
+            setSubmitMessage("Sin review en Baserow.");
+          }
           return;
         }
       } catch {}
@@ -120,6 +152,26 @@ function TrackCard({
       window.clearInterval(interval);
     };
   }, [slug]);
+
+  useEffect(() => {
+    if (!isImageOpen || typeof window === "undefined") return;
+
+    const previousOverflow = document.body.style.overflow;
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setIsImageOpen(false);
+      }
+    }
+
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isImageOpen]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -198,12 +250,34 @@ function TrackCard({
     }
   }
 
+  function handleCommentKeyDown(event: ReactKeyboardEvent<HTMLTextAreaElement>) {
+    if (event.key !== "Enter" || !event.shiftKey) return;
+    event.preventDefault();
+    if (isLocked || isSubmitting) return;
+    event.currentTarget.form?.requestSubmit();
+  }
+
   return (
-    <article className={`trackCard ${isFlipped ? "trackCardFlipped" : ""}`}>
+    <article className={`trackCard ${featured ? "trackCardFeatured" : ""} ${isFlipped ? "trackCardFlipped" : ""}`}>
       <div className="trackCardInner">
-        <div className="trackCardFace trackCardFaceFront">
-          <button className="trackFlipHotspot" type="button" aria-label={`Revisar ${title}`} onClick={() => setIsFlipped(true)} />
-          <span className="trackReviewRibbon trackReviewRibbonApproved">Aprobado</span>
+        <div
+          className="trackCardFace trackCardFaceFront"
+          role="button"
+          tabIndex={0}
+          aria-label={`Revisar ${title}`}
+          onClick={() => setIsFlipped(true)}
+          onKeyDown={(event) => {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              setIsFlipped(true);
+            }
+          }}
+        >
+          {approval ? (
+            <span className={`trackReviewRibbon ${approval === "approved" ? "trackReviewRibbonApproved" : "trackReviewRibbonRejected"}`}>
+              {approval === "approved" ? "Aprobado" : "Rechazado"}
+            </span>
+          ) : null}
           <div className="trackCardHead">
             <div>
               <h3>{title}</h3>
@@ -213,6 +287,19 @@ function TrackCard({
           <div className="trackArtwork">
             {image ? (
               <>
+                <button
+                  className="trackEnlargeButton"
+                  type="button"
+                  aria-label={`Ampliar ${title}`}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    setIsImageOpen(true);
+                  }}
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3M16 21h3a2 2 0 0 0 2-2v-3" />
+                  </svg>
+                </button>
                 <img src={image} alt={`${title} artwork`} />
                 <div className="trackProgressPillCopy">
                   <span>COMPLETED</span>
@@ -269,7 +356,9 @@ function TrackCard({
               value={comment}
               readOnly={isLocked}
               onChange={(event) => setComment(event.target.value)}
+              onKeyDown={handleCommentKeyDown}
             />
+            <p className="trackShortcutHint">Guardar review: `Shift + Enter`</p>
 
             <div className="trackReviewMeta">
               <span>{lastUpdate}</span>
@@ -284,28 +373,97 @@ function TrackCard({
               <span className="trackProgressBarFill" style={{ width: `${progress}%` }} />
             </div>
 
-            {isLocked ? (
-              <div className="trackLockedNote">Revision cerrada. Esta card ya no admite nuevos cambios.</div>
-            ) : (
-              <button className="trackSubmitButton" type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "Enviando..." : "Submit"}
-              </button>
-            )}
+            {isLocked ? <div className="trackLockedNote">Revision cerrada. Esta card ya no admite nuevos cambios.</div> : null}
           </form>
         </div>
       </div>
+      {image && isImageOpen && typeof document !== "undefined"
+        ? createPortal(
+            <div
+              className="trackLightbox"
+              role="dialog"
+              aria-modal="true"
+              aria-label={`${title} ampliado`}
+              onClick={() => setIsImageOpen(false)}
+            >
+              <div className="trackLightboxShell" onClick={(event) => event.stopPropagation()}>
+                <div className="trackLightboxToolbar">
+                  <div className="trackLightboxMeta">
+                    <span>Gallery View</span>
+                    <strong>{title}</strong>
+                  </div>
+                  <button
+                    className="trackLightboxClose"
+                    type="button"
+                    aria-label={`Cerrar ampliacion de ${title}`}
+                    onClick={() => setIsImageOpen(false)}
+                  >
+                    Cerrar
+                  </button>
+                </div>
+                <figure className="trackLightboxFigure">
+                  <div className="trackLightboxStage">
+                    <img src={image} alt={`${title} ampliado`} />
+                  </div>
+                  <figcaption>{title}</figcaption>
+                </figure>
+              </div>
+            </div>,
+            document.body,
+          )
+        : null}
     </article>
   );
 }
 
 export default function Page() {
+  const merchViewportRef = useRef<HTMLDivElement | null>(null);
+  const [isMerchPaused, setIsMerchPaused] = useState(false);
+
+  function moveMerch(direction: 1 | -1) {
+    const viewport = merchViewportRef.current;
+    if (!viewport) return;
+
+    const maxScroll = viewport.scrollWidth - viewport.clientWidth;
+    if (maxScroll <= 0) return;
+
+    const step = Math.max(viewport.clientWidth * 0.78, 280);
+    const nextLeft = viewport.scrollLeft + step * direction;
+
+    if (direction > 0 && viewport.scrollLeft >= maxScroll - 8) {
+      viewport.scrollTo({ left: 0, behavior: "smooth" });
+      return;
+    }
+
+    if (direction < 0 && viewport.scrollLeft <= 8) {
+      viewport.scrollTo({ left: maxScroll, behavior: "smooth" });
+      return;
+    }
+
+    viewport.scrollTo({
+      left: Math.min(maxScroll, Math.max(0, nextLeft)),
+      behavior: "smooth",
+    });
+  }
+
+  useEffect(() => {
+    const intervalId = window.setInterval(() => {
+      if (isMerchPaused) return;
+      moveMerch(1);
+    }, 4200);
+
+    return () => {
+      window.clearInterval(intervalId);
+    };
+  }, [isMerchPaused]);
+
   return (
     <AccessGate>
       <main className="page">
-      <div className="marquee" aria-label="Estado de actualización">
+      <div className="marquee marqueeLime" aria-label="Estado de actualización">
         <div className="marqueeTrack">
-          <span>Revision de cambios en curso · entrega y pre entrega de tapa estimada para el jueves 19/03/2026 a las 23:00.</span>
-          <span>Revision de cambios en curso · entrega y pre entrega de tapa estimada para el jueves 19/03/2026 a las 23:00.</span>
+          <span>Entrega del proyecto Pendiente de revision para generar archivos finales y exportar a Repositorio.</span>
+          <span>Entrega del proyecto Pendiente de revision para generar archivos finales y exportar a Repositorio.</span>
         </div>
       </div>
 
@@ -348,8 +506,10 @@ export default function Page() {
 
       <aside className="stickyDock" aria-label="Navegación rápida">
         <div className="stickyDockRail">
-          {processTrackNav.map((item) => (
-            item.disabled ? (
+          {processTrackNav.map((item) => {
+            const isAsiVerasButton = item.slug === "asi-veras";
+
+            return item.disabled ? (
               <span
                 key={item.slug}
                 className={`stickyDockButton stickyDockButton${item.tone[0].toUpperCase()}${item.tone.slice(1)} stickyDockButtonDisabled`}
@@ -358,6 +518,7 @@ export default function Page() {
               >
                 {item.image ? <img src={item.image} alt="" /> : <span>{item.short}</span>}
                 <small>{item.label}</small>
+                {isAsiVerasButton ? <span className="dockNewTag">[New]</span> : null}
               </span>
             ) : (
               <a
@@ -369,9 +530,10 @@ export default function Page() {
               >
                 {item.image ? <img src={item.image} alt="" /> : <span>{item.short}</span>}
                 <small>{item.label}</small>
+                {isAsiVerasButton ? <span className="dockNewTag">[New]</span> : null}
               </a>
-            )
-          ))}
+            );
+          })}
         </div>
       </aside>
 
@@ -381,7 +543,7 @@ export default function Page() {
             <span className="eyebrow">Seguimiento</span>
             <h2>Estado del proyecto</h2>
           </div>
-          <span className="timelineBadge">Revision de cambios · 19/03/2026 · 23:00</span>
+          <span className="timelineBadge">Pre-entrega de iconografía y tapa final · 27/03/2026 · 23:00</span>
         </div>
 
         <div className="projectTimelineRail" aria-hidden="true">
@@ -419,7 +581,7 @@ export default function Page() {
             <ol>
               <li>Hacé click sobre una card para darla vuelta y abrir el panel de revisión.</li>
               <li>Elegí `Approve` o `Reject` y dejá tu comentario antes de enviar.</li>
-              <li>Presioná `Submit` para guardar la decisión. Una vez enviada, la review queda cerrada.</li>
+                  <li>Para guardar la decisión usá `Shift + Enter`. Una vez enviada, la review queda cerrada.</li>
             </ol>
             <p>
               Para ver cada imagen en grande y leer el proceso completo, usá el menú flotante de la derecha:
@@ -434,21 +596,111 @@ export default function Page() {
         </div>
       </section>
 
-      <section className="heroLayout merchLayout" id="merch">
-        <article className="visualCard reveal reveal-5">
-          <img src="/img/mockup1.webp" alt="BORSE EP concepto visual" />
-          <div className="visualOverlay">
-            <span className="eyebrow">Proyecto activo</span>
-            <strong>Borse visual concept</strong>
-          </div>
+      <section className="panel reveal reveal-5 asiVerasSection" id="asi-veras">
+        <div className="sectionIntro symbolsIntro">
+          <span className="eyebrow">Sistema visual</span>
+          <h2>Simbología</h2>
+        </div>
+        <div className="symbolsGrid">
+          <article className="symbolsCard">
+            <img src="/img/4simbolos.webp" alt="Sistema de cuatro símbolos" />
+          </article>
+          <article className="symbolsCard symbolsCardFeatured">
+            <img src="/img/symbol-asiveras.webp" alt="Símbolo ASÍ VERÁS" />
+            <div className="symbolsOverlay">
+              <h3>Símbolo central del EP.</h3>
+              <p>
+                Nacido de la fusión de los cuatro emblemas, este signo no representa: invoca.
+                Es la síntesis del ritual, el punto donde las fuerzas se alinean y dejan de ser fragmentos para convertirse en visión.
+              </p>
+              <p>
+                Cada trazo es una runa.
+                <br />
+                Cada runa, una etapa atravesada.
+                <br />
+                Cada etapa, una transformación.
+              </p>
+              <p>
+                No es un símbolo decorativo.
+                <br />
+                Es un umbral.
+              </p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section className="panel reveal reveal-5 asiVerasSection" id="asi-veras">
+        <div className="sectionIntro">
+          <span className="eyebrow">Sección central</span>
+          <h2>ASÍ VERÁS</h2>
+        </div>
+
+        <article className="asiVerasManifesto">
+          <p>No es un concepto.</p>
+          <p>No es una estética.</p>
+          <p>No es una historia.</p>
+          <p>Es un proceso.</p>
+          <p>Durante todo el recorrido, nada aparece por azar.</p>
+          <p>Cada símbolo, cada escena, cada fragmento responde a una misma estructura invisible: un ritual.</p>
+          <p>El umbral abre.</p>
+          <p>La espiral prepara.</p>
+          <p>La energía irrumpe.</p>
+          <p>El círculo contiene.</p>
+          <p>Y en el centro... alguien cambia.</p>
+          <p>No se trata de entender lo que ves. Se trata de atravesarlo.</p>
+          <p>Porque lo que parecía separado -las canciones, los símbolos, las imágenes- en realidad forma parte de un mismo acto.</p>
+          <p>Una secuencia.</p>
+          <p>Una activación.</p>
+          <p>El cuerpo no representa.</p>
+          <p>El cuerpo evidencia.</p>
+          <p>Algo ocurrió.</p>
+          <p>Algo se sostuvo.</p>
+          <p>Algo emergió.</p>
+          <p>Al final no hay explicación.</p>
+          <p>Hay una certeza:</p>
+          <p>Nunca fue una suma de partes.</p>
+          <p>Siempre fue un ritual.</p>
+          <p>Y una vez que lo ves... ya no podés volver atrás.</p>
         </article>
-        <article className="visualCard reveal reveal-5">
-          <img src="/img/mockup2.webp" alt="BORSE merch visual 01" />
-          <div className="visualOverlay">
-            <span className="eyebrow">Merch</span>
-            <strong>Merch 01</strong>
-          </div>
-        </article>
+      </section>
+
+      <section className="merchCarousel reveal reveal-6" id="merch" aria-label="Carrusel de merch">
+        <div
+          ref={merchViewportRef}
+          className="merchSlider"
+          onMouseEnter={() => setIsMerchPaused(true)}
+          onMouseLeave={() => setIsMerchPaused(false)}
+          onFocusCapture={() => setIsMerchPaused(true)}
+          onBlurCapture={() => setIsMerchPaused(false)}
+        >
+          {merchSlides.map((slide, index) => (
+            <article
+              key={slide.src}
+              className={`visualCard ${slide.cardClassName ?? ""} reveal ${index < 2 ? "reveal-5" : "reveal-6"}`.trim()}
+            >
+              <img src={slide.src} alt={slide.alt} />
+            </article>
+          ))}
+        </div>
+        <div className="merchCarouselControls" aria-label="Controles del carrusel">
+          <button
+            className="merchCarouselButton"
+            type="button"
+            aria-label="Ver imagen anterior"
+            onClick={() => moveMerch(-1)}
+          >
+            ‹
+          </button>
+          <button
+            className="merchCarouselButton"
+            type="button"
+            aria-label="Ver imagen siguiente"
+            onClick={() => moveMerch(1)}
+          >
+            ›
+          </button>
+        </div>
       </section>
 
       <footer className="footerMarquee reveal reveal-6" aria-label="Footer marquee">

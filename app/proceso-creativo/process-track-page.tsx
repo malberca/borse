@@ -11,6 +11,8 @@ const processNav = [
 ];
 
 export function ProcessTrackPageView({ page }: { page: ProcessTrackPage }) {
+  const isAsiVeras = page.slug === "asi-veras";
+
   return (
     <AccessGate>
       <main className="page processPage">
@@ -28,11 +30,6 @@ export function ProcessTrackPageView({ page }: { page: ProcessTrackPage }) {
               <h1 className="processTitle">{page.title}</h1>
               <p className="processLead">{page.subtitle}</p>
             </div>
-            <div className="processStatusBlock">
-              <span className={`trackStatus ${page.status === "FINAL" ? "trackStatusFinal" : "trackStatusPending"}`}>
-                {page.status}
-              </span>
-            </div>
           </div>
         </header>
 
@@ -40,6 +37,7 @@ export function ProcessTrackPageView({ page }: { page: ProcessTrackPage }) {
           <div className="processStickyRail">
             {processTrackNav.map((item) => {
               const active = item.slug === page.slug;
+              const isAsiVerasButton = item.slug === "asi-veras";
               return item.disabled ? (
                 <span
                   key={item.slug}
@@ -48,6 +46,7 @@ export function ProcessTrackPageView({ page }: { page: ProcessTrackPage }) {
                   title={`${item.label} desactivado`}
                 >
                   {item.image ? <img src={item.image} alt="" /> : <span>{item.short}</span>}
+                  {isAsiVerasButton ? <span className="dockNewTag">[New]</span> : null}
                 </span>
               ) : (
                 <a
@@ -58,6 +57,7 @@ export function ProcessTrackPageView({ page }: { page: ProcessTrackPage }) {
                   title={item.label}
                 >
                   {item.image ? <img src={item.image} alt="" /> : <span>{item.short}</span>}
+                  {isAsiVerasButton ? <span className="dockNewTag">[New]</span> : null}
                 </a>
               );
             })}
@@ -79,7 +79,7 @@ export function ProcessTrackPageView({ page }: { page: ProcessTrackPage }) {
               <span className="eyebrow">Concepto</span>
               <h2>{page.title}</h2>
             </div>
-            <div className="processTextBlock">
+            <div className={`processTextBlock ${isAsiVeras ? "processTextBlockColumns" : ""}`}>
               {page.concept.map((line) => (
                 <p key={line}>{line}</p>
               ))}
@@ -112,9 +112,9 @@ export function ProcessTrackPageView({ page }: { page: ProcessTrackPage }) {
               ))}
             </div>
             {page.gallery?.length ? (
-              <div className="processGallery">
+              <div className={`processGallery ${isAsiVeras ? "processGalleryAsiVeras" : ""}`}>
                 {page.gallery.map((image) => (
-                  <article className="processGalleryCard" key={image.src}>
+                  <article className={`processGalleryCard ${isAsiVeras ? "processGalleryCardAsiVeras" : ""}`} key={image.src}>
                     <img src={image.src} alt={image.alt} />
                   </article>
                 ))}
