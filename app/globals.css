@@ -18,6 +18,11 @@
   to { transform: scaleX(1); }
 }
 
+@keyframes timelineFlow {
+  from { background-position: 0 0; }
+  to { background-position: 220px 0; }
+}
+
 @keyframes milestoneRise {
   from {
     opacity: 0;
@@ -90,10 +95,7 @@ body {
   margin: 0;
   color: var(--ink);
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  background:
-    radial-gradient(circle at top left, rgba(117, 98, 255, 0.16), transparent 24%),
-    radial-gradient(circle at bottom right, rgba(181, 106, 79, 0.14), transparent 26%),
-    linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%);
+  background: #ffffff;
   overflow-x: hidden;
 }
 
@@ -136,8 +138,8 @@ h1, h2, strong, .pieceMeta strong, .materialMeta strong, .coverMeta strong {
 .marquee {
   overflow: hidden;
   border-radius: 16px;
-  border: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(51, 51, 51, 0.24);
+  background: transparent;
   margin-bottom: 16px;
 }
 
@@ -150,7 +152,7 @@ h1, h2, strong, .pieceMeta strong, .materialMeta strong, .coverMeta strong {
 }
 
 .marqueeTrack span {
-  color: var(--muted);
+  color: #333333;
   text-transform: uppercase;
   letter-spacing: 0.16em;
   font-size: 11px;
@@ -158,7 +160,7 @@ h1, h2, strong, .pieceMeta strong, .materialMeta strong, .coverMeta strong {
 }
 
 .marqueeLime .marqueeTrack span {
-  color: #c8ff6b;
+  color: #333333;
 }
 
 .loginScreen {
@@ -177,8 +179,8 @@ h1, h2, strong, .pieceMeta strong, .materialMeta strong, .coverMeta strong {
 .loginMarquee {
   overflow: hidden;
   border-radius: 18px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(27, 31, 40, 0.92);
+  border: 1px solid rgba(51, 51, 51, 0.24);
+  background: transparent;
 }
 
 .loginMarqueeTrack {
@@ -190,7 +192,7 @@ h1, h2, strong, .pieceMeta strong, .materialMeta strong, .coverMeta strong {
 }
 
 .loginMarqueeTrack span {
-  color: #e7da76;
+  color: #333333;
   font-size: 11px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -221,13 +223,15 @@ h1, h2, strong, .pieceMeta strong, .materialMeta strong, .coverMeta strong {
   height: 68px;
   border-radius: 18px;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(20, 30, 45, 0.16);
+  background: #ffffff;
+  padding: 8px;
 }
 
 .loginBrandSymbol img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   display: block;
 }
 
@@ -299,9 +303,9 @@ h1, h2, strong, .pieceMeta strong, .materialMeta strong, .coverMeta strong {
   border: 0;
   padding: 14px 16px;
   border-radius: 16px;
-  background: linear-gradient(135deg, var(--violet), #4d7cff);
-  color: white;
-  font-weight: 600;
+  background: linear-gradient(135deg, #d8ff48, #b9f52e);
+  color: #1f3f9e;
+  font-weight: 700;
   cursor: pointer;
 }
 
@@ -520,6 +524,20 @@ h1, h2, strong, .pieceMeta strong, .materialMeta strong, .coverMeta strong {
   transform: translateY(-50%);
 }
 
+.stickyDockDisabled {
+  pointer-events: none;
+  opacity: 0.52;
+  filter: saturate(0.55);
+}
+
+.stickyDockDisabled .stickyDockRail {
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.2);
+}
+
+.stickyDockHidden {
+  display: none !important;
+}
+
 .stickyDockRail {
   display: grid;
   gap: 10px;
@@ -669,6 +687,49 @@ details summary {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+.miniMerchTicker {
+  margin-top: 10px;
+  padding: 8px 10px;
+  border-radius: 20px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.03);
+  overflow: hidden;
+}
+
+.miniMerchTickerTrack {
+  display: flex;
+  width: max-content;
+  gap: 8px;
+  animation: marqueeLoop 32s linear infinite;
+}
+
+.miniMerchTickerGroup {
+  display: flex;
+  gap: 8px;
+}
+
+.miniMerchCard {
+  width: 56px;
+  height: 78px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.06);
+  flex: 0 0 auto;
+}
+
+.miniMerchCard img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.miniMerchCardLp img {
+  object-fit: contain;
+  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.26), rgba(255, 255, 255, 0));
+}
+
 .merchCarousel {
   margin-top: 20px;
 }
@@ -788,6 +849,16 @@ details summary {
   top: 50%;
   z-index: 32;
   transform: translateY(-50%);
+}
+
+.processStickyDockDisabled {
+  pointer-events: none;
+  opacity: 0.52;
+  filter: saturate(0.55);
+}
+
+.processStickyDockHidden {
+  display: none !important;
 }
 
 .processStickyRail {
@@ -1062,27 +1133,144 @@ details summary {
 
 .projectTimelineRail {
   position: relative;
-  height: 5px;
+  height: 14px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.08);
   overflow: hidden;
-  margin-bottom: 16px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14);
 }
 
 .projectTimelineProgress {
+  position: relative;
   display: block;
-  width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, var(--moss), var(--violet));
+  border-radius: inherit;
+  background: linear-gradient(90deg, #7ea36f 0%, #7a85ff 100%);
   transform-origin: left center;
   animation: timelineGrow 1400ms cubic-bezier(0.22, 1, 0.36, 1) 220ms both;
 }
 
-.projectTimelineGrid {
+.projectTimelineProgress::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background:
+    repeating-linear-gradient(
+      -55deg,
+      rgba(255, 255, 255, 0.14) 0 12px,
+      rgba(255, 255, 255, 0.34) 12px 24px,
+      rgba(255, 255, 255, 0.14) 24px 36px
+    );
+  background-size: 220px 100%;
+  animation: timelineFlow 2.4s linear infinite;
+}
+
+.projectTimelineBarWrap {
+  margin: 10px 0 12px;
+}
+
+.projectTimelineRow {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  overflow-x: auto;
+  padding: 4px 2px 8px;
+  scrollbar-width: thin;
+}
+
+.timelineStepItem {
+  position: relative;
+  flex: 1 0 148px;
+  min-width: 148px;
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 12px;
-  align-items: start;
+  justify-items: center;
+  gap: 8px;
+  outline: none;
+}
+
+.timelineStepItem:focus-visible .timelinePoint {
+  box-shadow: 0 0 0 2px rgba(147, 129, 255, 0.32);
+}
+
+.timelinePoint {
+  border: 0;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.84);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+}
+
+.timelineStepItem-done .timelinePoint {
+  background: linear-gradient(135deg, #7da66d, #9dd386);
+  color: #081009;
+  border-color: rgba(157, 211, 134, 0.52);
+}
+
+.timelineStepItem-current .timelinePoint {
+  background: linear-gradient(135deg, #7d74ff, #9f8bff);
+  border-color: rgba(159, 139, 255, 0.65);
+  box-shadow: 0 0 0 8px rgba(130, 118, 255, 0.2);
+}
+
+.timelineStepItem-upcoming .timelinePoint {
+  opacity: 0.72;
+}
+
+.timelineStepLabel {
+  display: grid;
+  justify-items: center;
+  gap: 3px;
+  text-align: center;
+}
+
+.timelineStepLabel strong {
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: 0.01em;
+  color: rgba(244, 247, 251, 0.9);
+}
+
+.timelineStepLabel span {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(180, 188, 201, 0.82);
+}
+
+.timelineStepTooltip {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 16px);
+  width: min(250px, 70vw);
+  transform: translate(-50%, 8px);
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(9, 12, 18, 0.96);
+  color: rgba(240, 244, 250, 0.92);
+  font-size: 12px;
+  line-height: 1.45;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 160ms ease, transform 160ms ease;
+  z-index: 4;
+}
+
+.timelinePoint:hover ~ .timelineStepTooltip,
+.timelinePoint:focus-visible ~ .timelineStepTooltip,
+.timelineStepItem:focus-within .timelineStepTooltip {
+  opacity: 1;
+  transform: translate(-50%, 0);
 }
 
 .tracksSection {
@@ -1090,10 +1278,21 @@ details summary {
   background: rgba(255, 255, 255, 0.03);
 }
 
-.tracksGrid {
+.tracksLayout {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr) minmax(340px, 0.82fr);
   gap: 16px;
+  align-items: stretch;
+}
+
+.tracksApprovedGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.tracksActiveSlot {
+  display: grid;
 }
 
 .tracksIntro {
@@ -1178,7 +1377,9 @@ details summary {
 
 .trackCard {
   position: relative;
-  height: 100%;
+  width: 100%;
+  min-height: 520px;
+  height: 520px;
   border-radius: 22px;
   border: 1px solid rgba(255, 255, 255, 0.18);
   transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
@@ -1220,6 +1421,183 @@ details summary {
 .trackCardFeatured:hover {
   border-color: rgba(255, 255, 255, 0.2);
   box-shadow: 0 28px 56px rgba(0, 0, 0, 0.34);
+}
+
+.trackCardApproved {
+  min-height: 0;
+  height: auto;
+}
+
+.trackCardApprovedStatic {
+  border-radius: 20px;
+  overflow: hidden;
+  aspect-ratio: 1 / 1;
+  box-shadow: 0 16px 28px rgba(0, 0, 0, 0.22);
+}
+
+.trackCardApprovedStatic::before {
+  display: none;
+}
+
+.trackClosedArtwork {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  overflow: hidden;
+}
+
+.trackClosedArtwork img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.trackClosedArtwork::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.48);
+  pointer-events: none;
+}
+
+.trackCardApprovedStatic .trackReviewRibbon {
+  top: 14px;
+  left: -32px;
+  width: 140px;
+}
+
+.trackClosedProgress {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: calc(100% - 28px);
+  transform: translate(-50%, -50%);
+  z-index: 3;
+}
+
+.trackClosedProgressTrack {
+  position: relative;
+  height: 20px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.34);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.5),
+    0 8px 16px rgba(0, 0, 0, 0.22);
+}
+
+.trackClosedProgressFill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #ffffff 0%, #f7f9fc 52%, #e9eef5 100%);
+  transition: width 60000ms linear;
+  z-index: 1;
+}
+
+.trackClosedProgressLabel {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 2;
+  transform: translate(-50%, -50%);
+  color: #16100d;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.trackCardRejected {
+  min-height: 100%;
+  height: 100%;
+  border-color: rgba(196, 204, 216, 0.36);
+  box-shadow: 0 24px 52px rgba(0, 0, 0, 0.28);
+}
+
+.tracksActiveSlot .trackCardRejected {
+  min-height: 536px;
+}
+
+.trackCardRejected::before {
+  background:
+    radial-gradient(circle at 50% 18%, rgba(212, 216, 224, 0.42), rgba(175, 183, 196, 0.22) 46%, rgba(122, 129, 140, 0.08) 68%, transparent 82%);
+}
+
+.trackCardRejected .trackCardFace {
+  background:
+    radial-gradient(circle at 50% -6%, rgba(255, 255, 255, 0.38), transparent 32%),
+    linear-gradient(180deg, #f2f4f7 0%, #cfd5de 30%, #8d97a6 62%, #606977 100%);
+}
+
+.trackCardRejected .trackCardHead h3,
+.trackCardRejected .trackMeta {
+  color: #171c24;
+}
+
+.trackCardRejected .trackReviewRibbonRejected {
+  background: linear-gradient(135deg, #ffe179, #ffd041);
+  color: #d66700;
+  left: auto;
+  right: -34px;
+  transform: rotate(45deg);
+}
+
+.trackCardRejected .trackCardFaceBack,
+.trackCardRejected .trackReviewHead h3,
+.trackCardRejected .trackReviewMeta,
+.trackCardRejected .trackShortcutHint,
+.trackCardRejected .trackLockedNote,
+.trackCardRejected .trackCommentBox,
+.trackCardRejected .trackCommentBox[readonly],
+.trackCardRejected .trackCommentBox::placeholder,
+.trackCardRejected .trackCommentBox[readonly]::placeholder {
+  color: #333333;
+}
+
+.trackCardRejected .trackCommentBox,
+.trackCardRejected .trackCommentBox[readonly] {
+  border-color: rgba(51, 51, 51, 0.24);
+  background: transparent;
+}
+
+.trackCardRejected .trackApprovalButton {
+  border-color: rgba(51, 51, 51, 0.26);
+  background: #d2d2d2;
+  color: #333333;
+}
+
+.trackCardRejected .trackApprovalButton:disabled,
+.trackCardRejected .trackApprovalButtonApprove.trackApprovalButtonActive:disabled,
+.trackCardRejected .trackApprovalButtonReject.trackApprovalButtonActive:disabled {
+  background: #d2d2d2;
+  border-color: rgba(51, 51, 51, 0.26);
+  color: #333333;
+  box-shadow: none;
+}
+
+.trackCardRejected .trackLockedNote {
+  background: rgba(255, 255, 255, 0.78);
+}
+
+.trackCorrectionBadge {
+  margin-top: 2px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(214, 103, 0, 0.28);
+  background: linear-gradient(135deg, #ffe179, #ffd041);
+  color: #d66700;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-align: center;
 }
 
 .trackCardInner {
@@ -1281,6 +1659,10 @@ details summary {
 
 .trackReviewRibbonApproved {
   background: linear-gradient(135deg, #2f7f67, #5ec7a7);
+}
+
+.trackReviewRibbonClosed {
+  background: linear-gradient(135deg, #576171, #7a8598);
 }
 
 .trackReviewRibbonRejected {
@@ -1722,6 +2104,15 @@ details summary {
   border-radius: 22px 22px 0 0;
 }
 
+.trackArtworkMuted::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: rgba(255, 255, 255, 0.48);
+  pointer-events: none;
+}
+
 .trackEnlargeButton {
   position: absolute;
   top: 14px;
@@ -1762,6 +2153,81 @@ details summary {
   height: 100%;
   object-fit: cover;
   flex: 1 1 auto;
+}
+
+.trackActiveProgress {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: calc(100% - 28px);
+  transform: translate(-50%, -50%);
+  z-index: 3;
+  height: 18px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.38);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.58),
+    0 8px 18px rgba(0, 0, 0, 0.24);
+}
+
+.trackActiveProgressLabel {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 2;
+  transform: translate(-50%, -50%);
+  color: #16100d;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.trackActiveProgressFill {
+  position: relative;
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #ffffff 0%, #f7f9fc 52%, #e9eef5 100%);
+  transition: width 1100ms cubic-bezier(0.22, 1, 0.36, 1);
+  overflow: hidden;
+}
+
+.trackActiveProgressFill::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(
+      -55deg,
+      rgba(255, 255, 255, 0.1) 0 10px,
+      rgba(255, 255, 255, 0.3) 10px 20px,
+      rgba(255, 255, 255, 0.1) 20px 30px
+    );
+  background-size: 140px 100%;
+  animation: progressStripeFlow 1.8s linear infinite;
+}
+
+.trackActiveProgressFill::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      110deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.16) 28%,
+      rgba(255, 255, 255, 0.5) 50%,
+      rgba(255, 255, 255, 0.16) 72%,
+      transparent 100%
+    );
+  background-size: 180px 100%;
+  background-repeat: repeat-x;
+  mix-blend-mode: screen;
+  animation: progressFlow 2.2s linear infinite;
 }
 
 .trackLightbox {
@@ -1939,6 +2405,9 @@ details summary {
 .projectMilestoneDelay-3 { animation-delay: 360ms; }
 .projectMilestoneDelay-4 { animation-delay: 460ms; }
 .projectMilestoneDelay-5 { animation-delay: 560ms; }
+.projectMilestoneDelay-6 { animation-delay: 660ms; }
+.projectMilestoneDelay-7 { animation-delay: 760ms; }
+.projectMilestoneDelay-8 { animation-delay: 860ms; }
 
 .projectMilestoneDot {
   width: 10px;
@@ -2200,9 +2669,8 @@ details summary {
   font-size: 16px;
 }
 
-.fileLinkItem span {
-  display: block;
-  margin-top: 6px;
+.fileLinkAvailability {
+  margin: 6px 0 0;
   color: var(--muted);
   font-size: 13px;
 }
@@ -2215,8 +2683,8 @@ details summary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 20px;
-  height: 20px;
+  width: 46px;
+  height: 14px;
   margin-top: 0 !important;
   color: var(--ink) !important;
   font-size: 16px !important;
@@ -2228,11 +2696,62 @@ details summary {
   height: 20px;
 }
 
+.fileLinkArrow img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  display: block;
+}
+
+.fileLinkProgress {
+  margin-top: 12px;
+  display: grid;
+  gap: 6px;
+}
+
+.fileLinkProgressMeta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.fileLinkProgressMeta span {
+  margin: 0;
+  color: rgba(30, 40, 54, 0.65);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.fileLinkProgressMeta strong {
+  font-size: 12px;
+  letter-spacing: 0.04em;
+}
+
+.fileLinkProgressTrack {
+  height: 8px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(22, 32, 45, 0.2);
+  box-shadow: inset 0 0 0 1px rgba(22, 32, 45, 0.12);
+}
+
+.fileLinkProgressFill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #a2ff84 0%, #36d17f 65%, #20ab71 100%);
+  transition-property: width;
+  transition-timing-function: linear;
+}
+
 .downloadsPanel {
   background:
-    radial-gradient(circle at top left, rgba(149, 212, 160, 0.18), transparent 28%),
-    linear-gradient(180deg, #1d5c42 0%, #154332 100%);
-  border-color: rgba(149, 212, 160, 0.34);
+    radial-gradient(circle at 10% 0%, rgba(255, 255, 255, 0.52), transparent 38%),
+    linear-gradient(180deg, #f2f4f7 0%, #cfd5de 42%, #a8b1bf 100%);
+  border-color: rgba(51, 51, 51, 0.2);
 }
 
 .downloadsStrip {
@@ -2249,7 +2768,7 @@ details summary {
 .downloadsStripIntro p {
   max-width: 34ch;
   margin: 0;
-  color: rgba(255, 255, 255, 0.74);
+  color: rgba(51, 51, 51, 0.78);
 }
 
 .downloadsStripList {
@@ -2261,13 +2780,13 @@ details summary {
 .downloadsPanel .eyebrow,
 .downloadsPanel .sectionIntro h2,
 .downloadsPanel .fileLinkItem strong {
-  color: #ffffff;
+  color: #333333;
 }
 
 .downloadsPanel .fileLinkItem {
   padding: 18px 16px;
   border-top: 0;
-  border-left: 1px solid rgba(255, 255, 255, 0.14);
+  border-left: 1px solid rgba(51, 51, 51, 0.14);
 }
 
 .downloadsPanel .fileLinkItem:first-child {
@@ -2279,12 +2798,26 @@ details summary {
   padding-bottom: 18px;
 }
 
-.downloadsPanel .fileLinkItem > div span {
-  color: rgba(255, 255, 255, 0.72);
+.downloadsPanel .fileLinkAvailability {
+  color: rgba(51, 51, 51, 0.78);
 }
 
 .downloadsPanel .fileLinkArrow {
-  color: #ffffff !important;
+  color: #333333 !important;
+}
+
+.downloadsPanel .fileLinkProgressMeta span,
+.downloadsPanel .fileLinkProgressMeta strong {
+  color: #333333;
+}
+
+.downloadsPanel .fileLinkProgressTrack {
+  background: #d7dde6;
+  box-shadow: inset 0 0 0 1px rgba(51, 51, 51, 0.16);
+}
+
+.downloadsPanel .fileLinkProgressFill {
+  background: linear-gradient(90deg, #dcff90 0%, #b7ff6c 50%, #8de84e 100%);
 }
 
 .downloadsPanel .fileLinkItem:hover {
@@ -2384,8 +2917,8 @@ details summary {
   margin-top: 20px;
   overflow: hidden;
   border-radius: 16px;
-  border: 1px solid rgba(192, 255, 120, 0.18);
-  background: #07090d;
+  border: 1px solid rgba(51, 51, 51, 0.24);
+  background: transparent;
 }
 
 .footerMarqueeTrack {
@@ -2397,7 +2930,7 @@ details summary {
 }
 
 .footerMarqueeTrack span {
-  color: #c8ff6b;
+  color: #333333;
   font-family: "SFMono-Regular", SFMono-Regular, ui-monospace, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   font-size: 12px;
   letter-spacing: 0.14em;
@@ -2424,6 +2957,7 @@ details summary {
   .footerMarqueeTrack,
   .visualCard img,
   .projectTimelineProgress,
+  .projectTimelineProgress::before,
   .projectMilestoneReveal,
   .projectMilestoneCurrent .projectMilestoneDot,
   .trackProgressPillFill::before,
@@ -2462,8 +2996,16 @@ details summary {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .tracksGrid {
+  .tracksLayout {
+    grid-template-columns: 1fr;
+  }
+
+  .tracksApprovedGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .tracksActiveSlot .trackCardRejected {
+    min-height: 500px;
   }
 
   .heroLayout,
@@ -2495,6 +3037,19 @@ details summary {
 
   .asiVerasManifesto {
     column-count: 1;
+  }
+
+  .tracksApprovedGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .trackCardApproved {
+    min-height: 230px;
+    height: 230px;
+  }
+
+  .tracksActiveSlot .trackCardRejected {
+    min-height: 460px;
   }
 
   .page {

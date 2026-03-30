@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, KeyboardEvent as ReactKeyboardEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, KeyboardEvent as ReactKeyboardEvent, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
 import { AccessGate } from "./access-gate";
@@ -36,6 +36,58 @@ const merchSlides: Array<{ src: string; alt: string; cardClassName?: string }> =
   { src: "/img/lp-nobg.webp", alt: "BORSE LP visual", cardClassName: "lpMiniCard" },
 ];
 
+const merchTickerSlides = [...merchSlides, ...merchSlides, ...merchSlides];
+
+const lockedTrackReviews: Record<
+  string,
+  { approval: "approved" | "rejected"; comment: string; submitMessage: string }
+> = {
+  "cuatro-enemigos": {
+    approval: "approved",
+    comment: "Aprobada. Logo BORSE validado para esta portada. Pieza cerrada sin más correcciones.",
+    submitMessage: "Aprobada por BORSE. Card cerrada.",
+  },
+  "los-giles": {
+    approval: "approved",
+    comment: "Aprobada. Logo BORSE validado para esta portada. Pieza cerrada sin más correcciones.",
+    submitMessage: "Aprobada por BORSE. Card cerrada.",
+  },
+  "nunca-mas": {
+    approval: "approved",
+    comment: "Aprobada. Logo BORSE validado para esta portada. Pieza cerrada sin más correcciones.",
+    submitMessage: "Aprobada por BORSE. Card cerrada.",
+  },
+  vestigios: {
+    approval: "approved",
+    comment: "Aprobada. Logo BORSE validado para esta portada. Pieza cerrada sin más correcciones.",
+    submitMessage: "Aprobada por BORSE. Card cerrada.",
+  },
+  "asi-veras": {
+    approval: "rejected",
+    comment:
+      "En este caso prefiero que revisemos. Fue una buena propuesta, pero no estoy convencido. Siento que la imagen tiene mucha información, por otro lado tampoco quiero que el yo persona sea el centro de atención. Prefiero enfocar en el proyecto, en darle vida a Borse en todo caso.\n\nSi pensamos en algo más minimalista para la tapa general del EP, veo dos caminos:\n1. Logo Borse + iconografía (individual + fusión de los 4 emblemas), sobre fondo negro o paisaje con menor protagonismo.\n2. Segunda propuesta abierta si aparece una idea superadora.",
+    submitMessage: "Rechazada por BORSE. Preparar nueva propuesta.",
+  },
+};
+
+const DOWNLOAD_PROGRESS_ANIMATION_MS = 60000;
+const DOWNLOAD_PROGRESS_POLL_MS = 30000;
+const TIMELINE_PROGRESS_PERCENT = 90;
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const SUPABASE_PROGRESS_TABLE = process.env.NEXT_PUBLIC_DOWNLOAD_PROGRESS_TABLE ?? "download_progress";
+
+function clampProgressValue(value: number) {
+  return Math.min(100, Math.max(0, Math.round(value)));
+}
+
+function readSupabaseProgress(row: Record<string, unknown>) {
+  const raw = row.progress ?? row.percentage ?? row.percent;
+  const parsed = typeof raw === "number" ? raw : Number(raw);
+  if (!Number.isFinite(parsed)) return null;
+  return clampProgressValue(parsed);
+}
+
 function getTrackProgress(slug: string) {
   const schedule = trackProgressSchedule[slug];
   if (!schedule) return 0;
@@ -59,6 +111,7 @@ function TrackCard({
   image,
   reviewer,
   lastUpdate,
+  externalProgress,
   featured = false,
 }: {
   slug: string;
@@ -68,6 +121,7 @@ function TrackCard({
   image: string | null;
   reviewer: string;
   lastUpdate: string;
+  externalProgress?: number;
   featured?: boolean;
 }) {
   const storageKey = `borse-review-${slug}`;
@@ -80,13 +134,37 @@ function TrackCard({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitMessage, setSubmitMessage] = useState<string | null>(null);
   const [progress, setProgress] = useState(() => getTrackProgress(slug));
+  const lockedReview = lockedTrackReviews[slug];
+  const effectiveApproval = approval ?? lockedReview?.approval ?? null;
+  const isApprovedCard = effectiveApproval === "approved";
+  const isRejectedCard = effectiveApproval === "rejected";
   const isLocked = saved;
-  const progressValue = Math.round(progress);
+  const progressValue = isApprovedCard ? 100 : clampProgressValue(externalProgress ?? progress);
+  const activeReviewProgress = 5;
 
   useEffect(() => {
     if (typeof window === "undefined") return;
 
     let cancelled = false;
+
+    function applyLockedReviewIfNeeded() {
+      const lockedReview = lockedTrackReviews[slug];
+      if (!lockedReview || cancelled) return false;
+      setApproval(lockedReview.approval);
+      setComment(lockedReview.comment);
+      setRowId(null);
+      setSaved(true);
+      setSubmitMessage(lockedReview.submitMessage);
+      window.localStorage.setItem(
+        storageKey,
+        JSON.stringify({
+          approval: lockedReview.approval,
+          comment: lockedReview.comment,
+          rowId: null,
+        }),
+      );
+      return true;
+    }
 
     async function loadReview() {
       try {
@@ -111,19 +189,24 @@ function TrackCard({
             );
             setSubmitMessage("Cargado desde Baserow.");
           } else {
-            setApproval(null);
-            setComment("");
-            setRowId(null);
-            setSaved(false);
-            window.localStorage.removeItem(storageKey);
-            setSubmitMessage("Sin review en Baserow.");
+            if (!applyLockedReviewIfNeeded()) {
+              setApproval(null);
+              setComment("");
+              setRowId(null);
+              setSaved(false);
+              window.localStorage.removeItem(storageKey);
+              setSubmitMessage("Sin review en Baserow.");
+            }
           }
           return;
         }
       } catch {}
 
       const raw = window.localStorage.getItem(storageKey);
-      if (!raw || cancelled) return;
+      if (!raw || cancelled) {
+        applyLockedReviewIfNeeded();
+        return;
+      }
 
       try {
         const parsed = JSON.parse(raw) as { approval?: "approved" | "rejected" | null; comment?: string; rowId?: number | null };
@@ -131,7 +214,9 @@ function TrackCard({
         setComment(parsed.comment ?? "");
         setRowId(parsed.rowId ?? null);
         setSaved(Boolean(parsed.approval || parsed.comment));
-      } catch {}
+      } catch {
+        applyLockedReviewIfNeeded();
+      }
     }
 
     void loadReview();
@@ -257,8 +342,27 @@ function TrackCard({
     event.currentTarget.form?.requestSubmit();
   }
 
+  if (isApprovedCard) {
+    return (
+      <article className="trackCard trackCardApproved trackCardApprovedStatic">
+        <div className="trackClosedArtwork">
+          {image ? <img src={image} alt={`${title} artwork`} /> : null}
+          <span className="trackReviewRibbon trackReviewRibbonClosed">Cerrado</span>
+          <div className="trackClosedProgress" aria-label={`Avance ${title}: ${progressValue}%`}>
+            <div className="trackClosedProgressTrack" aria-hidden="true">
+              <span className="trackClosedProgressFill" style={{ width: `${progressValue}%` }} />
+              <span className="trackClosedProgressLabel">COMPLETED 100%</span>
+            </div>
+          </div>
+        </div>
+      </article>
+    );
+  }
+
   return (
-    <article className={`trackCard ${featured ? "trackCardFeatured" : ""} ${isFlipped ? "trackCardFlipped" : ""}`}>
+    <article
+      className={`trackCard ${featured ? "trackCardFeatured" : ""} ${isFlipped ? "trackCardFlipped" : ""} ${isApprovedCard ? "trackCardApproved" : ""} ${isRejectedCard ? "trackCardRejected" : ""}`.trim()}
+    >
       <div className="trackCardInner">
         <div
           className="trackCardFace trackCardFaceFront"
@@ -273,10 +377,8 @@ function TrackCard({
             }
           }}
         >
-          {approval ? (
-            <span className={`trackReviewRibbon ${approval === "approved" ? "trackReviewRibbonApproved" : "trackReviewRibbonRejected"}`}>
-              {approval === "approved" ? "Aprobado" : "Rechazado"}
-            </span>
+          {effectiveApproval ? (
+            <span className="trackReviewRibbon trackReviewRibbonRejected">Revision</span>
           ) : null}
           <div className="trackCardHead">
             <div>
@@ -284,7 +386,7 @@ function TrackCard({
               <p className="trackMeta">{subtitle}</p>
             </div>
           </div>
-          <div className="trackArtwork">
+          <div className={`trackArtwork ${isRejectedCard ? "trackArtworkMuted" : ""}`}>
             {image ? (
               <>
                 <button
@@ -301,6 +403,12 @@ function TrackCard({
                   </svg>
                 </button>
                 <img src={image} alt={`${title} artwork`} />
+                {isRejectedCard ? (
+                  <div className="trackActiveProgress" aria-label={`Avance ${title}: ${activeReviewProgress}%`}>
+                    <span className="trackActiveProgressFill" style={{ width: `${activeReviewProgress}%` }} />
+                    <span className="trackActiveProgressLabel">{activeReviewProgress}%</span>
+                  </div>
+                ) : null}
                 <div className="trackProgressPillCopy">
                   <span>COMPLETED</span>
                   <strong>{progressValue}%</strong>
@@ -374,6 +482,9 @@ function TrackCard({
             </div>
 
             {isLocked ? <div className="trackLockedNote">Revision cerrada. Esta card ya no admite nuevos cambios.</div> : null}
+            {isLocked && effectiveApproval === "rejected" ? (
+              <div className="trackCorrectionBadge">Change requests</div>
+            ) : null}
           </form>
         </div>
       </div>
@@ -417,45 +528,62 @@ function TrackCard({
 }
 
 export default function Page() {
-  const merchViewportRef = useRef<HTMLDivElement | null>(null);
-  const [isMerchPaused, setIsMerchPaused] = useState(false);
-
-  function moveMerch(direction: 1 | -1) {
-    const viewport = merchViewportRef.current;
-    if (!viewport) return;
-
-    const maxScroll = viewport.scrollWidth - viewport.clientWidth;
-    if (maxScroll <= 0) return;
-
-    const step = Math.max(viewport.clientWidth * 0.78, 280);
-    const nextLeft = viewport.scrollLeft + step * direction;
-
-    if (direction > 0 && viewport.scrollLeft >= maxScroll - 8) {
-      viewport.scrollTo({ left: 0, behavior: "smooth" });
-      return;
-    }
-
-    if (direction < 0 && viewport.scrollLeft <= 8) {
-      viewport.scrollTo({ left: maxScroll, behavior: "smooth" });
-      return;
-    }
-
-    viewport.scrollTo({
-      left: Math.min(maxScroll, Math.max(0, nextLeft)),
-      behavior: "smooth",
-    });
-  }
+  const [downloadProgress, setDownloadProgress] = useState<Record<string, number>>(() =>
+    finalFiles.reduce<Record<string, number>>((acc, item) => {
+      acc[item.slug] = clampProgressValue(item.progress);
+      return acc;
+    }, {}),
+  );
 
   useEffect(() => {
-    const intervalId = window.setInterval(() => {
-      if (isMerchPaused) return;
-      moveMerch(1);
-    }, 4200);
+    if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return;
+
+    let cancelled = false;
+    const supabaseUrl = SUPABASE_URL;
+    const supabaseAnonKey = SUPABASE_ANON_KEY;
+    const endpoint = `${supabaseUrl.replace(/\/$/, "")}/rest/v1/${SUPABASE_PROGRESS_TABLE}?select=slug,progress,percentage,percent`;
+
+    async function loadProgressFromSupabase() {
+      try {
+        const response = await fetch(endpoint, {
+          headers: {
+            apikey: supabaseAnonKey,
+            Authorization: `Bearer ${supabaseAnonKey}`,
+          },
+          cache: "no-store",
+        });
+        if (!response.ok) return;
+        const rows = (await response.json()) as Array<Record<string, unknown>>;
+        if (cancelled) return;
+        setDownloadProgress((previous) => {
+          const next = { ...previous };
+          let changed = false;
+          for (const row of rows) {
+            const slug = typeof row.slug === "string" ? row.slug : null;
+            if (!slug || !(slug in next)) continue;
+            const progressValue = readSupabaseProgress(row);
+            if (progressValue === null) continue;
+            if (next[slug] !== progressValue) {
+              next[slug] = progressValue;
+              changed = true;
+            }
+          }
+          return changed ? next : previous;
+        });
+      } catch {}
+    }
+
+    void loadProgressFromSupabase();
+    const intervalId = window.setInterval(loadProgressFromSupabase, DOWNLOAD_PROGRESS_POLL_MS);
 
     return () => {
+      cancelled = true;
       window.clearInterval(intervalId);
     };
-  }, [isMerchPaused]);
+  }, []);
+
+  const activeTrack = tracks.find((track) => track.slug === "asi-veras") ?? tracks[tracks.length - 1];
+  const approvedTracks = tracks.filter((track) => track.slug !== activeTrack.slug);
 
   return (
     <AccessGate>
@@ -466,6 +594,31 @@ export default function Page() {
           <span>Portal activo en modo pre-cierre · entrega final prevista para el lunes 30/03/2026 al final del día.</span>
         </div>
       </div>
+
+      <section className="miniMerchTicker reveal reveal-1" id="merch" aria-label="Merch mini slide">
+        <div className="miniMerchTickerTrack">
+          <div className="miniMerchTickerGroup">
+            {merchTickerSlides.map((slide, index) => (
+              <article
+                key={`mini-merch-a-${slide.src}-${index}`}
+                className={`miniMerchCard ${slide.cardClassName === "lpMiniCard" ? "miniMerchCardLp" : ""}`}
+              >
+                <img src={slide.src} alt={slide.alt} />
+              </article>
+            ))}
+          </div>
+          <div className="miniMerchTickerGroup" aria-hidden="true">
+            {merchTickerSlides.map((slide, index) => (
+              <article
+                key={`mini-merch-b-${slide.src}-${index}`}
+                className={`miniMerchCard ${slide.cardClassName === "lpMiniCard" ? "miniMerchCardLp" : ""}`}
+              >
+                <img src={slide.src} alt="" />
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
 
       <header className="masthead reveal reveal-1" id="overview">
         <div className="heroScene" aria-hidden="true">
@@ -491,20 +644,7 @@ export default function Page() {
         </div>
       </header>
 
-      <nav className="controlBar reveal reveal-2" aria-label="Secciones">
-        <a className="controlButton controlButtonActive" href="#overview">Overview</a>
-        <a className="controlButton" href="#estado-proyecto">Timeline</a>
-        <a className="controlButton" href="#revisados">Revisados</a>
-        <a className="controlButton" href="#merch">Merch</a>
-        <a className="controlButton" href="/manuscrito">Manuscrito</a>
-        <a className="controlButton" href="/proceso-creativo/cuatro-enemigos">Cuatro Enemigos</a>
-        <a className="controlButton" href="/proceso-creativo/los-giles">Los Giles</a>
-        <a className="controlButton" href="/proceso-creativo/nunca-mas">Nunca más me iré</a>
-        <a className="controlButton" href="/proceso-creativo/vestigios">Vestigios</a>
-        <a className="controlButton" href="#archivos-finales">Descargas</a>
-      </nav>
-
-      <aside className="stickyDock" aria-label="Navegación rápida">
+      <aside className="stickyDock stickyDockHidden" aria-label="Navegación rápida">
         <div className="stickyDockRail">
           {processTrackNav.map((item) => {
             const isAsiVerasButton = item.slug === "asi-veras";
@@ -546,25 +686,106 @@ export default function Page() {
           <span className="timelineBadge">Cierre final en curso · lunes 30/03/2026 · fin del día</span>
         </div>
 
-        <div className="projectTimelineRail" aria-hidden="true">
-          <span className="projectTimelineProgress" />
+        <div className="projectTimelineBarWrap" aria-hidden="true">
+          <div className="projectTimelineRail">
+            <span
+              className="projectTimelineProgress"
+              style={{ width: `${TIMELINE_PROGRESS_PERCENT}%` }}
+            />
+          </div>
         </div>
 
-        <div className="projectTimelineGrid">
+        <div className="projectTimelineRow">
           {projectTimeline.map((item, index) => (
             <article
-              className={`projectMilestone ${
-                item.status === "current" ? "projectMilestoneCurrent" : "projectMilestoneDone"
-              } projectMilestoneReveal projectMilestoneDelay-${index + 1}`}
+              className={`timelineStepItem timelineStepItem-${item.status} projectMilestoneReveal projectMilestoneDelay-${index + 1}`}
               key={`${item.date}-${item.title}`}
+              tabIndex={0}
             >
-              <span className="projectMilestoneIndex">{String.fromCharCode(65 + index)}</span>
-              <span className="projectMilestoneDot" />
-              <span className="projectMilestoneDate">{item.date}</span>
-              <strong>{item.title}</strong>
-              <p>{item.body}</p>
+              <button className="timelinePoint" type="button" aria-label={`Ver detalle de ${item.title}`}>
+                {index + 1}
+              </button>
+              <div className="timelineStepLabel">
+                <strong>{item.title}</strong>
+                <span>{item.date}</span>
+              </div>
+              <div className="timelineStepTooltip" role="note" aria-label={`Detalle ${item.title}`}>
+                {item.body}
+              </div>
             </article>
           ))}
+        </div>
+      </section>
+
+      <section className="panel downloadsPanel downloadsStrip reveal reveal-4" id="archivos-finales">
+        <div className="sectionIntro downloadsStripIntro">
+          <div>
+            <span className="eyebrow">Archivos finales</span>
+            <h2>Descargas</h2>
+          </div>
+        </div>
+        <div className="fileLinkList downloadsStripList">
+          {finalFiles.map((item) => {
+            const progressValue = clampProgressValue(downloadProgress[item.slug] ?? item.progress);
+
+            return item.href ? (
+              <a
+                className="fileLinkItem"
+                href={item.href}
+                key={item.slug}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <span className="fileLinkArrow" aria-hidden="true">
+                  <img src="/img/gdrive_logo.png" alt="" />
+                </span>
+                <div>
+                  <strong>{item.label}</strong>
+                  <p className="fileLinkAvailability">{item.availability}</p>
+                  <div className="fileLinkProgress" aria-label={`Avance ${item.label}: ${progressValue}%`}>
+                    <div className="fileLinkProgressMeta">
+                      <span>Avance</span>
+                      <strong>{progressValue}%</strong>
+                    </div>
+                    <div className="fileLinkProgressTrack" aria-hidden="true">
+                      <span
+                        className="fileLinkProgressFill"
+                        style={{
+                          width: `${progressValue}%`,
+                          transitionDuration: `${DOWNLOAD_PROGRESS_ANIMATION_MS}ms`,
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </a>
+            ) : (
+              <div className="fileLinkItem fileLinkItemDisabled" key={item.slug}>
+                <span className="fileLinkArrow" aria-hidden="true">
+                  <img src="/img/gdrive_logo.png" alt="" />
+                </span>
+                <div>
+                  <strong>{item.label}</strong>
+                  <p className="fileLinkAvailability">{item.availability}</p>
+                  <div className="fileLinkProgress" aria-label={`Avance ${item.label}: ${progressValue}%`}>
+                    <div className="fileLinkProgressMeta">
+                      <span>Avance</span>
+                      <strong>{progressValue}%</strong>
+                    </div>
+                    <div className="fileLinkProgressTrack" aria-hidden="true">
+                      <span
+                        className="fileLinkProgressFill"
+                        style={{
+                          width: `${progressValue}%`,
+                          transitionDuration: `${DOWNLOAD_PROGRESS_ANIMATION_MS}ms`,
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </section>
 
@@ -576,199 +797,16 @@ export default function Page() {
             El EP avanza desde el conflicto interno hacia una forma de percepción más precisa:
             lucha, ruptura, rastro y revelación dentro de un mismo sistema.
           </p>
-          <div className="tracksGuide">
-            <strong>Cómo validar y guardar</strong>
-            <ol>
-              <li>Hacé click sobre una card para darla vuelta y abrir el panel de revisión.</li>
-              <li>Elegí `Approve` o `Reject` y dejá tu comentario antes de enviar.</li>
-                  <li>Para guardar la decisión usá `Shift + Enter`. Una vez enviada, la review queda cerrada.</li>
-            </ol>
-            <p>
-              Para ver cada imagen en grande y leer el proceso completo, usá el menú flotante de la derecha:
-              cada cuadrado corresponde a un track del EP. Cualquier duda: martin@ma-no.work
-            </p>
+        </div>
+        <div className="tracksLayout">
+          <div className="tracksApprovedGrid">
+            {approvedTracks.map((track) => (
+              <TrackCard key={track.title} {...track} externalProgress={downloadProgress[track.slug]} />
+            ))}
           </div>
-        </div>
-        <div className="tracksGrid">
-          {tracks.map((track) => (
-            <TrackCard key={track.title} {...track} />
-          ))}
-        </div>
-      </section>
-
-      <section className="panel reveal reveal-5 asiVerasSection" id="asi-veras">
-        <div className="sectionIntro symbolsIntro">
-          <span className="eyebrow">Sistema visual</span>
-          <h2>Simbología</h2>
-        </div>
-        <div className="symbolsGrid">
-          <article className="symbolsCard">
-            <img src="/img/4simbolos.webp" alt="Sistema de cuatro símbolos" />
-          </article>
-          <article className="symbolsCard symbolsCardFeatured">
-            <img src="/img/symbol-asiveras.webp" alt="Símbolo ASÍ VERÁS" />
-            <div className="symbolsOverlay">
-              <h3>Símbolo central del EP.</h3>
-              <p>
-                Nacido de la fusión de los cuatro emblemas, este signo no representa: invoca.
-                Es la síntesis del ritual, el punto donde las fuerzas se alinean y dejan de ser fragmentos para convertirse en visión.
-              </p>
-              <p>
-                Cada trazo es una runa.
-                <br />
-                Cada runa, una etapa atravesada.
-                <br />
-                Cada etapa, una transformación.
-              </p>
-              <p>
-                No es un símbolo decorativo.
-                <br />
-                Es un umbral.
-              </p>
-            </div>
-          </article>
-        </div>
-      </section>
-
-      <section className="panel reveal reveal-5 asiVerasSection" id="asi-veras">
-        <div className="sectionIntro">
-          <span className="eyebrow">Sección central</span>
-          <h2>ASÍ VERÁS</h2>
-        </div>
-
-        <article className="asiVerasManifesto">
-          <p>No es un concepto.</p>
-          <p>No es una estética.</p>
-          <p>No es una historia.</p>
-          <p>Es un proceso.</p>
-          <p>Durante todo el recorrido, nada aparece por azar.</p>
-          <p>Cada símbolo, cada escena, cada fragmento responde a una misma estructura invisible: un ritual.</p>
-          <p>El umbral abre.</p>
-          <p>La espiral prepara.</p>
-          <p>La energía irrumpe.</p>
-          <p>El círculo contiene.</p>
-          <p>Y en el centro... alguien cambia.</p>
-          <p>No se trata de entender lo que ves. Se trata de atravesarlo.</p>
-          <p>Porque lo que parecía separado -las canciones, los símbolos, las imágenes- en realidad forma parte de un mismo acto.</p>
-          <p>Una secuencia.</p>
-          <p>Una activación.</p>
-          <p>El cuerpo no representa.</p>
-          <p>El cuerpo evidencia.</p>
-          <p>Algo ocurrió.</p>
-          <p>Algo se sostuvo.</p>
-          <p>Algo emergió.</p>
-          <p>Al final no hay explicación.</p>
-          <p>Hay una certeza:</p>
-          <p>Nunca fue una suma de partes.</p>
-          <p>Siempre fue un ritual.</p>
-          <p>Y una vez que lo ves... ya no podés volver atrás.</p>
-        </article>
-      </section>
-
-      <section className="merchCarousel reveal reveal-6" id="merch" aria-label="Carrusel de merch">
-        <div
-          ref={merchViewportRef}
-          className="merchSlider"
-          onMouseEnter={() => setIsMerchPaused(true)}
-          onMouseLeave={() => setIsMerchPaused(false)}
-          onFocusCapture={() => setIsMerchPaused(true)}
-          onBlurCapture={() => setIsMerchPaused(false)}
-        >
-          {merchSlides.map((slide, index) => (
-            <article
-              key={slide.src}
-              className={`visualCard ${slide.cardClassName ?? ""} reveal ${index < 2 ? "reveal-5" : "reveal-6"}`.trim()}
-            >
-              <img src={slide.src} alt={slide.alt} />
-            </article>
-          ))}
-        </div>
-        <div className="merchCarouselControls" aria-label="Controles del carrusel">
-          <button
-            className="merchCarouselButton"
-            type="button"
-            aria-label="Ver imagen anterior"
-            onClick={() => moveMerch(-1)}
-          >
-            ‹
-          </button>
-          <button
-            className="merchCarouselButton"
-            type="button"
-            aria-label="Ver imagen siguiente"
-            onClick={() => moveMerch(1)}
-          >
-            ›
-          </button>
-        </div>
-      </section>
-
-      <section className="panel downloadsPanel downloadsStrip reveal reveal-6" id="archivos-finales">
-        <div className="sectionIntro downloadsStripIntro">
-          <div>
-            <span className="eyebrow">Archivos finales</span>
-            <h2>Descargas</h2>
+          <div className="tracksActiveSlot">
+            <TrackCard key={activeTrack.title} {...activeTrack} externalProgress={downloadProgress[activeTrack.slug]} />
           </div>
-          <p>Sin archivos finales por el momento. Se publican el lunes 30/03/2026 al final del día.</p>
-        </div>
-        <div className="fileLinkList downloadsStripList">
-          {finalFiles.map((item) =>
-            item.href ? (
-              <a
-                className="fileLinkItem"
-                href={item.href}
-                key={item.label}
-                target="_blank"
-                rel="noreferrer"
-              >
-                <span className="fileLinkArrow" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" role="presentation">
-                    <path
-                      d="M3.75 8.25A2.25 2.25 0 0 1 6 6h3.18c.6 0 1.17.24 1.59.66l1.07 1.09c.42.42.99.65 1.58.65H18A2.25 2.25 0 0 1 20.25 10.5v5.25A2.25 2.25 0 0 1 18 18H6a2.25 2.25 0 0 1-2.25-2.25V8.25Z"
-                      stroke="currentColor"
-                      strokeWidth="1.7"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M8.25 12h7.5"
-                      stroke="currentColor"
-                      strokeWidth="1.7"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                </span>
-                <div>
-                  <strong>{item.label}</strong>
-                  <span>Disponible en Drive</span>
-                </div>
-              </a>
-            ) : (
-              <div className="fileLinkItem fileLinkItemDisabled" key={item.label}>
-                <span className="fileLinkArrow" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" role="presentation">
-                    <path
-                      d="M3.75 8.25A2.25 2.25 0 0 1 6 6h3.18c.6 0 1.17.24 1.59.66l1.07 1.09c.42.42.99.65 1.58.65H18A2.25 2.25 0 0 1 20.25 10.5v5.25A2.25 2.25 0 0 1 18 18H6a2.25 2.25 0 0 1-2.25-2.25V8.25Z"
-                      stroke="currentColor"
-                      strokeWidth="1.7"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M8.25 12h7.5"
-                      stroke="currentColor"
-                      strokeWidth="1.7"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                </span>
-                <div>
-                  <strong>{item.label}</strong>
-                  <span>{item.availability}</span>
-                </div>
-              </div>
-            ),
-          )}
         </div>
       </section>
 

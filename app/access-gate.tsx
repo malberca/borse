@@ -45,7 +45,7 @@ export function AccessGate({ children }: { children: ReactNode }) {
           <section className="loginCard">
             <div className="loginBrandRow">
               <div className="loginBrandSymbol">
-                <img src="/img/logo_hands.webp" alt="MA-NO" />
+                <img src="/img/logo_borse.png" alt="BORSE" />
               </div>
               <div className="loginBrand">
                 <img src="/img/mano-logo26-w.svg" alt="MA-NO Consultora" />

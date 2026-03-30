@@ -97,13 +97,38 @@ export const covers = [
 
 export const downloads = ["PDF de concepto", "Tapas finales", "Pack de mockups"];
 
-export const finalFiles: Array<{ label: string; availability: string; href?: string }> = [
-  { label: "Cuatro Enemigos", availability: "Pendiente de exportación final" },
-  { label: "YouTube", availability: "Pendiente de exportación final" },
-  { label: "Spotify", availability: "Pendiente de exportación final" },
-  { label: "Social", availability: "Pendiente de exportación final" },
-  { label: "Master", availability: "Pendiente de exportación final" },
-  { label: "Canvas", availability: "Pendiente de exportación final" },
+export const finalFiles: Array<{ slug: string; label: string; availability: string; progress: number; href?: string }> = [
+  {
+    slug: "cuatro-enemigos",
+    label: "Tapa · Cuatro Enemigos",
+    availability: "Disponible en Drive",
+    progress: 100,
+    href: "https://drive.google.com/drive/folders/1iyMW-Sd7NTnMhPdleOI7NgOzMsFcMjDb?usp=sharing",
+  },
+  {
+    slug: "los-giles",
+    label: "Tapa · Los Giles",
+    availability: "Espacio reservado · pendiente de exportación final",
+    progress: 64,
+  },
+  {
+    slug: "nunca-mas",
+    label: "Tapa · Nunca más me iré",
+    availability: "Espacio reservado · pendiente de exportación final",
+    progress: 58,
+  },
+  {
+    slug: "vestigios",
+    label: "Tapa · Vestigios",
+    availability: "Espacio reservado · pendiente de exportación final",
+    progress: 72,
+  },
+  {
+    slug: "asi-veras",
+    label: "Tapa · EP general",
+    availability: "Espacio reservado · pendiente de nueva propuesta",
+    progress: 31,
+  },
 ];
 
 export const symbologySystem = [
@@ -142,47 +167,47 @@ export const tracks = [
     status: "Final",
     image: "/img/BORSE_IMGS/cuatroenemigos.webp",
     reviewer: "Mariano Borserini",
-    lastUpdate: "2026-03-09",
+    lastUpdate: "2026-03-29",
   },
   {
     slug: "los-giles",
     title: "Los Giles",
     subtitle: "Dimensión humana / tribal",
     descriptor: "Muchos caminan toda la vida sin despertar. Otros descubren que el camino también es una batalla.",
-    status: "Borrador",
+    status: "Final",
     image: "/img/BORSE_IMGS/logiles.webp",
     reviewer: "Mariano Borserini",
-    lastUpdate: "2026-03-09",
+    lastUpdate: "2026-03-29",
   },
   {
     slug: "nunca-mas",
     title: "Nunca más me iré",
     subtitle: "Ruptura y transformación",
     descriptor: "El punto de quiebre: dejar atrás la forma anterior para mutar.",
-    status: "Borrador",
+    status: "Final",
     image: "/img/BORSE_IMGS/nuncamasmeire.webp",
     reviewer: "Mariano Borserini",
-    lastUpdate: "2026-03-09",
+    lastUpdate: "2026-03-29",
   },
   {
     slug: "vestigios",
     title: "Vestigios",
     subtitle: "Huellas de la guerra ritual",
     descriptor: "Lo que queda después del conflicto interno: símbolos, materia y rastro.",
-    status: "Borrador",
+    status: "Final",
     image: "/img/BORSE_IMGS/vestigios.webp",
     reviewer: "Mariano Borserini",
-    lastUpdate: "2026-03-09",
+    lastUpdate: "2026-03-29",
   },
   {
     slug: "asi-veras",
     title: "Asi Veras",
     subtitle: "Pieza principal del EP",
     descriptor: "La tapa principal dentro del sistema visual del proyecto.",
-    status: "Final",
+    status: "Revisión",
     image: "/img/BORSE_IMGS/asiveras.webp",
     reviewer: "Mariano Borserini",
-    lastUpdate: "2026-03-27",
+    lastUpdate: "2026-03-29",
     featured: true,
   },
 ];

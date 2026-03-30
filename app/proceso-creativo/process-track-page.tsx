@@ -7,6 +7,7 @@ const processNav = [
   { href: "/proceso-creativo/los-giles", label: "Los Giles" },
   { href: "/proceso-creativo/nunca-mas", label: "Nunca más me iré" },
   { href: "/proceso-creativo/vestigios", label: "Vestigios" },
+  { href: "/proceso-creativo/asi-veras", label: "ASÍ VERÁS" },
   { href: "/proceso-creativo#archivos-finales", label: "Descargas" },
 ];
 
@@ -33,7 +34,7 @@ export function ProcessTrackPageView({ page }: { page: ProcessTrackPage }) {
           </div>
         </header>
 
-        <aside className="processStickyDock" aria-label="Tracks del EP">
+        <aside className="processStickyDock processStickyDockHidden" aria-label="Tracks del EP">
           <div className="processStickyRail">
             {processTrackNav.map((item) => {
               const active = item.slug === page.slug;

@@ -22,7 +22,7 @@ export default function ProcesoCreativoPage() {
           </div>
         </header>
 
-        <aside className="processStickyDock" aria-label="Tracks del EP">
+        <aside className="processStickyDock processStickyDockHidden" aria-label="Tracks del EP">
           <div className="processStickyRail">
             {processTrackNav.map((item) => (
               item.disabled ? (
@@ -56,6 +56,7 @@ export default function ProcesoCreativoPage() {
           <a className="controlButton" href="/proceso-creativo/los-giles">Los Giles</a>
           <a className="controlButton" href="/proceso-creativo/nunca-mas">Nunca más me iré</a>
           <a className="controlButton" href="/proceso-creativo/vestigios">Vestigios</a>
+          <a className="controlButton" href="/proceso-creativo/asi-veras">ASÍ VERÁS</a>
           <a className="controlButton" href="/#archivos-finales">Descargas</a>
         </nav>
 
