@@ -458,15 +458,27 @@ function TrackCard({
               </button>
             </div>
 
-            <textarea
-              className="trackCommentBox"
-              placeholder="Comentario de revisión"
-              value={comment}
-              readOnly={isLocked}
-              onChange={(event) => setComment(event.target.value)}
-              onKeyDown={handleCommentKeyDown}
-            />
-            <p className="trackShortcutHint">Guardar review: `Shift + Enter`</p>
+            {isRejectedCard ? (
+              <div className="trackCommentRead" role="note" aria-label="Comentario de revisión">
+                {(comment.trim() ? comment : "Sin comentario")
+                  .split("\n")
+                  .map((line, index) => (
+                    <p key={`${slug}-comment-${index}`}>{line || "\u00A0"}</p>
+                  ))}
+              </div>
+            ) : (
+              <>
+                <textarea
+                  className="trackCommentBox"
+                  placeholder="Comentario de revisión"
+                  value={comment}
+                  readOnly={isLocked}
+                  onChange={(event) => setComment(event.target.value)}
+                  onKeyDown={handleCommentKeyDown}
+                />
+                <p className="trackShortcutHint">Guardar review: `Shift + Enter`</p>
+              </>
+            )}
 
             <div className="trackReviewMeta">
               <span>{lastUpdate}</span>

@@ -1589,10 +1589,14 @@ details summary {
 
 .trackCardRejected .trackReviewRibbonRejected {
   background: linear-gradient(135deg, #ffe179, #ffd041);
-  color: #d66700;
+  color: #333333;
   left: auto;
   right: -34px;
   transform: rotate(45deg);
+}
+
+.trackCardRejected .trackCardFaceBack {
+  background: #333333;
 }
 
 .trackCardRejected .trackCardFaceBack,
@@ -1600,45 +1604,52 @@ details summary {
 .trackCardRejected .trackReviewMeta,
 .trackCardRejected .trackShortcutHint,
 .trackCardRejected .trackLockedNote,
+.trackCardRejected .trackCommentRead,
 .trackCardRejected .trackCommentBox,
 .trackCardRejected .trackCommentBox[readonly],
 .trackCardRejected .trackCommentBox::placeholder,
 .trackCardRejected .trackCommentBox[readonly]::placeholder {
-  color: #333333;
+  color: #fffff5;
 }
 
 .trackCardRejected .trackCommentBox,
 .trackCardRejected .trackCommentBox[readonly] {
-  border-color: rgba(51, 51, 51, 0.24);
+  border-color: rgba(255, 255, 245, 0.24);
   background: transparent;
 }
 
 .trackCardRejected .trackApprovalButton {
-  border-color: rgba(51, 51, 51, 0.26);
-  background: #d2d2d2;
-  color: #333333;
+  border-color: rgba(255, 255, 245, 0.24);
+  background: rgba(255, 255, 245, 0.12);
+  color: #fffff5;
 }
 
 .trackCardRejected .trackApprovalButton:disabled,
 .trackCardRejected .trackApprovalButtonApprove.trackApprovalButtonActive:disabled,
 .trackCardRejected .trackApprovalButtonReject.trackApprovalButtonActive:disabled {
-  background: #d2d2d2;
-  border-color: rgba(51, 51, 51, 0.26);
-  color: #333333;
+  background: rgba(255, 255, 245, 0.12);
+  border-color: rgba(255, 255, 245, 0.24);
+  color: #fffff5;
+  opacity: 0.64;
   box-shadow: none;
 }
 
 .trackCardRejected .trackLockedNote {
-  background: rgba(255, 255, 255, 0.78);
+  background: rgba(255, 255, 245, 0.1);
+  border: 1px solid rgba(255, 255, 245, 0.2);
+}
+
+.trackCardRejected .trackReviewHead .trackMeta {
+  color: rgba(255, 255, 245, 0.84);
 }
 
 .trackCorrectionBadge {
   margin-top: 2px;
   padding: 10px 12px;
   border-radius: 12px;
-  border: 1px solid rgba(214, 103, 0, 0.28);
-  background: linear-gradient(135deg, #ffe179, #ffd041);
-  color: #d66700;
+  border: 1px solid rgba(255, 255, 245, 0.24);
+  background: rgba(255, 255, 245, 0.1);
+  color: #fffff5;
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.04em;
@@ -1722,6 +1733,7 @@ details summary {
   display: flex;
   flex-direction: column;
   padding: 16px;
+  background: #333333;
   pointer-events: none;
 }
 
