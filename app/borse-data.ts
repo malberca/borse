@@ -56,7 +56,7 @@ export const projectTimeline = [
     status: "done",
   },
   {
-    date: "30/03/2026 · fin del día",
+    date: "31/03/2026 · 23:00",
     title: "Cierre final del portal",
     body: "Correcciones menores, última tapa y carga final de entregables.",
     status: "current",
@@ -97,36 +97,48 @@ export const covers = [
 
 export const downloads = ["PDF de concepto", "Tapas finales", "Pack de mockups"];
 
-export const finalFiles: Array<{ slug: string; label: string; availability: string; progress: number; href?: string }> = [
+export const finalFiles: Array<{
+  slug: string;
+  label: string;
+  iconSrc: string;
+  availability: string;
+  progress: number;
+  href?: string;
+}> = [
   {
     slug: "cuatro-enemigos",
-    label: "Tapa · Cuatro Enemigos",
-    availability: "Disponible en Drive",
+    label: "Cuatro Enemigos",
+    iconSrc: "/img/icons/cuatro.png",
+    availability: "Disponible en drive",
     progress: 100,
     href: "https://drive.google.com/drive/folders/1iyMW-Sd7NTnMhPdleOI7NgOzMsFcMjDb?usp=sharing",
   },
   {
     slug: "los-giles",
-    label: "Tapa · Los Giles",
-    availability: "Espacio reservado · pendiente de exportación final",
+    label: "Los Giles",
+    iconSrc: "/img/icons/giles.png",
+    availability: "Pendiente",
     progress: 64,
   },
   {
     slug: "nunca-mas",
-    label: "Tapa · Nunca más me iré",
-    availability: "Espacio reservado · pendiente de exportación final",
+    label: "Nunca más me iré",
+    iconSrc: "/img/icons/nunca.png",
+    availability: "Pendiente",
     progress: 58,
   },
   {
     slug: "vestigios",
-    label: "Tapa · Vestigios",
-    availability: "Espacio reservado · pendiente de exportación final",
+    label: "Vestigios",
+    iconSrc: "/img/icons/vestigios.png",
+    availability: "Pendiente",
     progress: 72,
   },
   {
     slug: "asi-veras",
-    label: "Tapa · EP general",
-    availability: "Espacio reservado · pendiente de nueva propuesta",
+    label: "EP general",
+    iconSrc: "/img/icons/veras.png",
+    availability: "Pendiente",
     progress: 31,
   },
 ];

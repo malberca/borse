@@ -602,8 +602,8 @@ export default function Page() {
       <main className="page">
       <div className="marquee marqueeLime" aria-label="Estado de actualización">
         <div className="marqueeTrack">
-          <span>Portal activo en modo pre-cierre · entrega final prevista para el lunes 30/03/2026 al final del día.</span>
-          <span>Portal activo en modo pre-cierre · entrega final prevista para el lunes 30/03/2026 al final del día.</span>
+          <span>Portal activo en modo pre-cierre · entrega final prevista para el martes 31/03/2026 a las 23 hs.</span>
+          <span>Portal activo en modo pre-cierre · entrega final prevista para el martes 31/03/2026 a las 23 hs.</span>
         </div>
       </div>
 
@@ -695,7 +695,7 @@ export default function Page() {
             <span className="eyebrow">Seguimiento</span>
             <h2>Estado del proyecto</h2>
           </div>
-          <span className="timelineBadge">Cierre final en curso · lunes 30/03/2026 · fin del día</span>
+          <span className="timelineBadge">Cierre final en curso · martes 31/03/2026 · 23:00</span>
         </div>
 
         <div className="projectTimelineBarWrap" aria-hidden="true">
@@ -752,8 +752,14 @@ export default function Page() {
                   <img src="/img/gdrive_logo.png" alt="" />
                 </span>
                 <div>
-                  <strong>{item.label}</strong>
-                  <p className="fileLinkAvailability">{item.availability}</p>
+                  <div className="fileLinkTitleRow">
+                    <img className="fileLinkTitleIcon" src={item.iconSrc} alt="" aria-hidden="true" />
+                    <strong>{item.label}</strong>
+                  </div>
+                  <p className="fileLinkAvailability">
+                    <span className={`downloadDot ${item.href ? "downloadDotLive" : "downloadDotMuted"}`} aria-hidden="true" />
+                    {item.availability}
+                  </p>
                   <div className="fileLinkProgress" aria-label={`Avance ${item.label}: ${progressValue}%`}>
                     <div className="fileLinkProgressMeta">
                       <span>Avance</span>
@@ -777,8 +783,14 @@ export default function Page() {
                   <img src="/img/gdrive_logo.png" alt="" />
                 </span>
                 <div>
-                  <strong>{item.label}</strong>
-                  <p className="fileLinkAvailability">{item.availability}</p>
+                  <div className="fileLinkTitleRow">
+                    <img className="fileLinkTitleIcon" src={item.iconSrc} alt="" aria-hidden="true" />
+                    <strong>{item.label}</strong>
+                  </div>
+                  <p className="fileLinkAvailability">
+                    <span className={`downloadDot ${item.href ? "downloadDotLive" : "downloadDotMuted"}`} aria-hidden="true" />
+                    {item.availability}
+                  </p>
                   <div className="fileLinkProgress" aria-label={`Avance ${item.label}: ${progressValue}%`}>
                     <div className="fileLinkProgressMeta">
                       <span>Avance</span>
