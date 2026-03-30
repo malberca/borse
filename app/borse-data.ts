@@ -53,6 +53,12 @@ export const projectTimeline = [
     date: "27/03/2026 · 23:00",
     title: "Pre-entrega de iconografía y tapa final",
     body: "Entrega tentativa de iconografía y pre-entrega de tapa final.",
+    status: "done",
+  },
+  {
+    date: "30/03/2026 · fin del día",
+    title: "Cierre final del portal",
+    body: "Correcciones menores, última tapa y carga final de entregables.",
     status: "current",
   },
 ];
@@ -91,13 +97,13 @@ export const covers = [
 
 export const downloads = ["PDF de concepto", "Tapas finales", "Pack de mockups"];
 
-export const finalFiles = [
-  { label: "Cuatro Enemigos", href: "https://drive.google.com/drive/folders/1iyMW-Sd7NTnMhPdleOI7NgOzMsFcMjDb?usp=sharing" },
-  { label: "YouTube", href: "https://drive.google.com/drive/folders/1k09AUjil2WRKDNfuemA-JIgFm-eV_4W0?usp=drive_link" },
-  { label: "Spotify", href: "https://drive.google.com/drive/folders/11O_Bydihh594GpPHHUTRErEozGeoUw81?usp=drive_link" },
-  { label: "Social", href: "https://drive.google.com/drive/folders/1kopF_Mghb-GGv3TrtHb8tmwNuMYzXwwn?usp=drive_link" },
-  { label: "Master", href: "https://drive.google.com/drive/folders/1C5cVz0yZjeYyrtGKTNtIWmZPjPCxDxWt?usp=drive_link" },
-  { label: "Canvas", href: "https://drive.google.com/drive/folders/1_7Wurl_codomMVCZdIEIovzRJxBoHW4X?usp=drive_link" },
+export const finalFiles: Array<{ label: string; availability: string; href?: string }> = [
+  { label: "Cuatro Enemigos", availability: "Pendiente de exportación final" },
+  { label: "YouTube", availability: "Pendiente de exportación final" },
+  { label: "Spotify", availability: "Pendiente de exportación final" },
+  { label: "Social", availability: "Pendiente de exportación final" },
+  { label: "Master", availability: "Pendiente de exportación final" },
+  { label: "Canvas", availability: "Pendiente de exportación final" },
 ];
 
 export const symbologySystem = [

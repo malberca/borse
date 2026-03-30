@@ -4,7 +4,7 @@ import { FormEvent, KeyboardEvent as ReactKeyboardEvent, useEffect, useRef, useS
 import { createPortal } from "react-dom";
 
 import { AccessGate } from "./access-gate";
-import { processTrackNav, projectTimeline, tracks } from "./borse-data";
+import { finalFiles, processTrackNav, projectTimeline, tracks } from "./borse-data";
 
 const trackProgressSchedule: Record<string, { start: string; end: string }> = {
   "cuatro-enemigos": {
@@ -462,8 +462,8 @@ export default function Page() {
       <main className="page">
       <div className="marquee marqueeLime" aria-label="Estado de actualización">
         <div className="marqueeTrack">
-          <span>Entrega del proyecto Pendiente de revision para generar archivos finales y exportar a Repositorio.</span>
-          <span>Entrega del proyecto Pendiente de revision para generar archivos finales y exportar a Repositorio.</span>
+          <span>Portal activo en modo pre-cierre · entrega final prevista para el lunes 30/03/2026 al final del día.</span>
+          <span>Portal activo en modo pre-cierre · entrega final prevista para el lunes 30/03/2026 al final del día.</span>
         </div>
       </div>
 
@@ -501,7 +501,7 @@ export default function Page() {
         <a className="controlButton" href="/proceso-creativo/los-giles">Los Giles</a>
         <a className="controlButton" href="/proceso-creativo/nunca-mas">Nunca más me iré</a>
         <a className="controlButton" href="/proceso-creativo/vestigios">Vestigios</a>
-        <a className="controlButton" href="/proceso-creativo#archivos-finales">Descargas</a>
+        <a className="controlButton" href="#archivos-finales">Descargas</a>
       </nav>
 
       <aside className="stickyDock" aria-label="Navegación rápida">
@@ -543,7 +543,7 @@ export default function Page() {
             <span className="eyebrow">Seguimiento</span>
             <h2>Estado del proyecto</h2>
           </div>
-          <span className="timelineBadge">Pre-entrega de iconografía y tapa final · 27/03/2026 · 23:00</span>
+          <span className="timelineBadge">Cierre final en curso · lunes 30/03/2026 · fin del día</span>
         </div>
 
         <div className="projectTimelineRail" aria-hidden="true">
@@ -700,6 +700,75 @@ export default function Page() {
           >
             ›
           </button>
+        </div>
+      </section>
+
+      <section className="panel downloadsPanel downloadsStrip reveal reveal-6" id="archivos-finales">
+        <div className="sectionIntro downloadsStripIntro">
+          <div>
+            <span className="eyebrow">Archivos finales</span>
+            <h2>Descargas</h2>
+          </div>
+          <p>Sin archivos finales por el momento. Se publican el lunes 30/03/2026 al final del día.</p>
+        </div>
+        <div className="fileLinkList downloadsStripList">
+          {finalFiles.map((item) =>
+            item.href ? (
+              <a
+                className="fileLinkItem"
+                href={item.href}
+                key={item.label}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <span className="fileLinkArrow" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" role="presentation">
+                    <path
+                      d="M3.75 8.25A2.25 2.25 0 0 1 6 6h3.18c.6 0 1.17.24 1.59.66l1.07 1.09c.42.42.99.65 1.58.65H18A2.25 2.25 0 0 1 20.25 10.5v5.25A2.25 2.25 0 0 1 18 18H6a2.25 2.25 0 0 1-2.25-2.25V8.25Z"
+                      stroke="currentColor"
+                      strokeWidth="1.7"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <path
+                      d="M8.25 12h7.5"
+                      stroke="currentColor"
+                      strokeWidth="1.7"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                </span>
+                <div>
+                  <strong>{item.label}</strong>
+                  <span>Disponible en Drive</span>
+                </div>
+              </a>
+            ) : (
+              <div className="fileLinkItem fileLinkItemDisabled" key={item.label}>
+                <span className="fileLinkArrow" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" role="presentation">
+                    <path
+                      d="M3.75 8.25A2.25 2.25 0 0 1 6 6h3.18c.6 0 1.17.24 1.59.66l1.07 1.09c.42.42.99.65 1.58.65H18A2.25 2.25 0 0 1 20.25 10.5v5.25A2.25 2.25 0 0 1 18 18H6a2.25 2.25 0 0 1-2.25-2.25V8.25Z"
+                      stroke="currentColor"
+                      strokeWidth="1.7"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <path
+                      d="M8.25 12h7.5"
+                      stroke="currentColor"
+                      strokeWidth="1.7"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                </span>
+                <div>
+                  <strong>{item.label}</strong>
+                  <span>{item.availability}</span>
+                </div>
+              </div>
+            ),
+          )}
         </div>
       </section>
 
