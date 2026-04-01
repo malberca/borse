@@ -1328,6 +1328,11 @@ details summary {
   gap: 14px;
 }
 
+.tracksApprovedGrid .trackCardApprovedStatic .trackClosedArtwork img {
+  opacity: 0.5;
+  filter: saturate(0.72) contrast(0.9);
+}
+
 .tracksActiveSlot {
   display: grid;
 }
@@ -1501,10 +1506,10 @@ details summary {
 }
 
 .trackClosedArtwork::after {
-  content: "";
+  content: none;
   position: absolute;
   inset: 0;
-  background: rgba(255, 255, 255, 0.48);
+  background: transparent;
   pointer-events: none;
 }
 
@@ -1584,12 +1589,13 @@ details summary {
 
 .trackCardRejected .trackCardHead h3,
 .trackCardRejected .trackMeta {
-  color: #171c24;
+  color: #333333;
 }
 
 .trackCardRejected .trackReviewRibbonRejected {
-  background: linear-gradient(135deg, #ffe179, #ffd041);
-  color: #333333;
+  background: #ed0730;
+  border: 1px solid rgba(255, 255, 245, 0.28);
+  color: #fffff5;
   left: auto;
   right: -34px;
   transform: rotate(45deg);
@@ -1643,6 +1649,17 @@ details summary {
   color: rgba(255, 255, 245, 0.84);
 }
 
+.trackCardRejected .trackArtwork {
+  padding: 12px;
+  border-radius: 20px 20px 0 0;
+}
+
+.trackCardRejected .trackArtwork img {
+  object-fit: contain;
+  border-radius: 16px;
+  background: transparent;
+}
+
 .trackCorrectionBadge {
   margin-top: 2px;
   padding: 10px 12px;
@@ -1682,6 +1699,98 @@ details summary {
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22);
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
+}
+
+.trackCard.trackCardMainEp::before {
+  display: none;
+}
+
+.trackCard.trackCardMainEp {
+  min-height: 100%;
+  height: 100%;
+}
+
+.tracksActiveSlot .trackCard.trackCardMainEp {
+  min-height: 536px;
+}
+
+.trackCard.trackCardMainEp .trackCardFace {
+  background: #d7dbe2;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 245, 0.38);
+}
+
+.trackCard.trackCardMainEp .trackCardHead h3,
+.trackCard.trackCardMainEp .trackMeta {
+  color: #333333;
+}
+
+.trackCard.trackCardMainEp .trackReviewRibbon {
+  left: auto;
+  right: -34px;
+  transform: rotate(45deg);
+}
+
+.trackCard.trackCardMainEp .trackArtwork {
+  padding: 12px;
+  border-radius: 20px 20px 0 0;
+}
+
+.trackCard.trackCardMainEp .trackArtwork img {
+  object-fit: contain;
+  border-radius: 16px;
+  background: transparent;
+}
+
+.trackCard.trackCardMainEp .trackCardFaceBack {
+  background: #333333;
+}
+
+.trackCard.trackCardMainEp .trackCardFaceBack,
+.trackCard.trackCardMainEp .trackReviewHead h3,
+.trackCard.trackCardMainEp .trackReviewHead .trackMeta,
+.trackCard.trackCardMainEp .trackReviewMeta,
+.trackCard.trackCardMainEp .trackShortcutHint,
+.trackCard.trackCardMainEp .trackLockedNote,
+.trackCard.trackCardMainEp .trackCommentRead,
+.trackCard.trackCardMainEp .trackCommentBox,
+.trackCard.trackCardMainEp .trackCommentBox[readonly],
+.trackCard.trackCardMainEp .trackCommentBox::placeholder,
+.trackCard.trackCardMainEp .trackCommentBox[readonly]::placeholder {
+  color: #fffff5;
+}
+
+.trackCard.trackCardMainEp .trackCommentBox,
+.trackCard.trackCardMainEp .trackCommentBox[readonly] {
+  border-color: rgba(255, 255, 245, 0.24);
+  background: transparent;
+}
+
+.trackCard.trackCardMainEp .trackApprovalButton {
+  border-color: rgba(255, 255, 245, 0.24);
+  background: rgba(255, 255, 245, 0.12);
+  color: #fffff5;
+}
+
+.trackCard.trackCardMainEp .trackApprovalButtonApprove.trackApprovalButtonActive {
+  border-color: rgba(94, 199, 167, 0.9);
+  background: rgba(94, 199, 167, 0.16);
+  color: #5ec7a7;
+  box-shadow: inset 0 0 0 1px rgba(94, 199, 167, 0.28);
+}
+
+.trackCard.trackCardMainEp .trackApprovalButton:disabled,
+.trackCard.trackCardMainEp .trackApprovalButtonApprove.trackApprovalButtonActive:disabled,
+.trackCard.trackCardMainEp .trackApprovalButtonReject.trackApprovalButtonActive:disabled {
+  background: rgba(255, 255, 245, 0.12);
+  border-color: rgba(255, 255, 245, 0.24);
+  color: #fffff5;
+  opacity: 0.64;
+  box-shadow: none;
+}
+
+.trackCard.trackCardMainEp .trackLockedNote {
+  background: rgba(255, 255, 245, 0.1);
+  border: 1px solid rgba(255, 255, 245, 0.2);
 }
 
 .trackCardFaceFront {
@@ -1778,6 +1887,10 @@ details summary {
   font-size: 13px;
   font-weight: 300;
   line-height: 1.4;
+}
+
+.trackMetaMulti {
+  line-height: 1.5;
 }
 
 .trackReviewHead h3,
@@ -1974,6 +2087,17 @@ details summary {
   display: grid;
   gap: 14px;
   margin-top: 18px;
+}
+
+.trackCommentRead {
+  display: grid;
+  gap: 10px;
+  line-height: 1.55;
+  color: #fffff5;
+}
+
+.trackCommentRead p {
+  margin: 0;
 }
 
 .trackApprovalRow {
@@ -3133,7 +3257,8 @@ details summary {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .tracksActiveSlot .trackCardRejected {
+  .tracksActiveSlot .trackCardRejected,
+  .tracksActiveSlot .trackCard.trackCardMainEp {
     min-height: 500px;
   }
 
@@ -3177,7 +3302,8 @@ details summary {
     height: 230px;
   }
 
-  .tracksActiveSlot .trackCardRejected {
+  .tracksActiveSlot .trackCardRejected,
+  .tracksActiveSlot .trackCard.trackCardMainEp {
     min-height: 460px;
   }
 

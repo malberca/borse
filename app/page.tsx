@@ -37,6 +37,8 @@ const merchSlides: Array<{ src: string; alt: string; cardClassName?: string }> =
 ];
 
 const merchTickerSlides = [...merchSlides, ...merchSlides, ...merchSlides];
+const ASI_VERAS_DEFAULT_COMMENT =
+  "Te comparto la propuesta final de tapa.\nTrabajé sobre una línea minimalista, priorizando los símbolos como eje y manteniendo el fondo como soporte sutil.";
 
 const lockedTrackReviews: Record<
   string,
@@ -62,12 +64,6 @@ const lockedTrackReviews: Record<
     comment: "Aprobada. Logo BORSE validado para esta portada. Pieza cerrada sin más correcciones.",
     submitMessage: "Aprobada por BORSE. Card cerrada.",
   },
-  "asi-veras": {
-    approval: "rejected",
-    comment:
-      "En este caso prefiero que revisemos. Fue una buena propuesta, pero no estoy convencido. Siento que la imagen tiene mucha información, por otro lado tampoco quiero que el yo persona sea el centro de atención. Prefiero enfocar en el proyecto, en darle vida a Borse en todo caso.\n\nSi pensamos en algo más minimalista para la tapa general del EP, veo dos caminos:\n1. Logo Borse + iconografía (individual + fusión de los 4 emblemas), sobre fondo negro o paisaje con menor protagonismo.\n2. Segunda propuesta abierta si aparece una idea superadora.",
-    submitMessage: "Rechazada por BORSE. Preparar nueva propuesta.",
-  },
 };
 
 const DOWNLOAD_PROGRESS_ANIMATION_MS = 60000;
@@ -79,6 +75,14 @@ const SUPABASE_PROGRESS_TABLE = process.env.NEXT_PUBLIC_DOWNLOAD_PROGRESS_TABLE 
 
 function clampProgressValue(value: number) {
   return Math.min(100, Math.max(0, Math.round(value)));
+}
+
+function normalizeApproval(value: unknown): "approved" | "rejected" | null {
+  if (typeof value !== "string") return null;
+  const normalized = value.trim().toLowerCase();
+  if (normalized === "approved" || normalized === "approve") return "approved";
+  if (normalized === "rejected" || normalized === "reject") return "rejected";
+  return null;
 }
 
 function readSupabaseProgress(row: Record<string, unknown>) {
@@ -107,8 +111,10 @@ function TrackCard({
   slug,
   title,
   subtitle,
+  descriptor,
   status,
   image,
+  imageFull,
   reviewer,
   lastUpdate,
   externalProgress,
@@ -117,8 +123,10 @@ function TrackCard({
   slug: string;
   title: string;
   subtitle: string;
+  descriptor?: string;
   status: string;
   image: string | null;
+  imageFull?: string | null;
   reviewer: string;
   lastUpdate: string;
   externalProgress?: number;
@@ -127,20 +135,28 @@ function TrackCard({
   const storageKey = `borse-review-${slug}`;
   const [isFlipped, setIsFlipped] = useState(false);
   const [isImageOpen, setIsImageOpen] = useState(false);
+  const isMainEpCard = slug === "asi-veras";
   const [approval, setApproval] = useState<"approved" | "rejected" | null>(null);
-  const [comment, setComment] = useState("");
+  const [comment, setComment] = useState(() => (isMainEpCard ? ASI_VERAS_DEFAULT_COMMENT : ""));
   const [saved, setSaved] = useState(false);
   const [rowId, setRowId] = useState<number | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [hasExplicitApprovalSelection, setHasExplicitApprovalSelection] = useState(false);
   const [submitMessage, setSubmitMessage] = useState<string | null>(null);
   const [progress, setProgress] = useState(() => getTrackProgress(slug));
   const lockedReview = lockedTrackReviews[slug];
   const effectiveApproval = approval ?? lockedReview?.approval ?? null;
-  const isApprovedCard = effectiveApproval === "approved";
+  const isApprovedCard = !isMainEpCard && effectiveApproval === "approved";
   const isRejectedCard = effectiveApproval === "rejected";
   const isLocked = saved;
   const progressValue = isApprovedCard ? 100 : clampProgressValue(externalProgress ?? progress);
-  const activeReviewProgress = 5;
+  const lightboxImage = imageFull ?? image;
+  const showApprovedRibbon = effectiveApproval === "approved";
+  const showNewRibbon = !showApprovedRibbon;
+  const lockedNoteMessage =
+    isMainEpCard && effectiveApproval === "approved"
+      ? "Revision cerrada. Esta card ya no admite nuevos cambios. Tan pronto como esten los archivos disponibles para la descarga recibiras una notifiacion por mail."
+      : "Revision cerrada. Esta card ya no admite nuevos cambios.";
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -152,6 +168,7 @@ function TrackCard({
       if (!lockedReview || cancelled) return false;
       setApproval(lockedReview.approval);
       setComment(lockedReview.comment);
+      setHasExplicitApprovalSelection(true);
       setRowId(null);
       setSaved(true);
       setSubmitMessage(lockedReview.submitMessage);
@@ -175,14 +192,16 @@ function TrackCard({
 
         if (!cancelled && response.ok && data.ok) {
           if (data.record) {
-            setApproval(data.record.approval ?? null);
+            const normalizedApproval = normalizeApproval(data.record.approval);
+            setApproval(normalizedApproval);
+            setHasExplicitApprovalSelection(Boolean(normalizedApproval));
             setComment(data.record.reviewer_comment ?? "");
             setRowId(data.record.id ?? null);
-            setSaved(Boolean(data.record.approval || data.record.reviewer_comment));
+            setSaved(Boolean(normalizedApproval || data.record.reviewer_comment));
             window.localStorage.setItem(
               storageKey,
               JSON.stringify({
-                approval: data.record.approval ?? null,
+                approval: normalizedApproval,
                 comment: data.record.reviewer_comment ?? "",
                 rowId: data.record.id ?? null,
               }),
@@ -190,7 +209,18 @@ function TrackCard({
             setSubmitMessage("Cargado desde Baserow.");
           } else {
             if (!applyLockedReviewIfNeeded()) {
+              if (isMainEpCard) {
+                setApproval(null);
+                setHasExplicitApprovalSelection(false);
+                setComment(ASI_VERAS_DEFAULT_COMMENT);
+                setRowId(null);
+                setSaved(false);
+                window.localStorage.removeItem(storageKey);
+                setSubmitMessage("Revisión lista para completar.");
+                return;
+              }
               setApproval(null);
+              setHasExplicitApprovalSelection(false);
               setComment("");
               setRowId(null);
               setSaved(false);
@@ -210,10 +240,12 @@ function TrackCard({
 
       try {
         const parsed = JSON.parse(raw) as { approval?: "approved" | "rejected" | null; comment?: string; rowId?: number | null };
-        setApproval(parsed.approval ?? null);
+        const normalizedApproval = normalizeApproval(parsed.approval);
+        setApproval(normalizedApproval);
+        setHasExplicitApprovalSelection(Boolean(normalizedApproval));
         setComment(parsed.comment ?? "");
         setRowId(parsed.rowId ?? null);
-        setSaved(Boolean(parsed.approval || parsed.comment));
+        setSaved(Boolean(normalizedApproval || parsed.comment));
       } catch {
         applyLockedReviewIfNeeded();
       }
@@ -262,6 +294,10 @@ function TrackCard({
     event.preventDefault();
     if (typeof window === "undefined") return;
     if (isLocked) return;
+    if (!hasExplicitApprovalSelection) {
+      setSubmitMessage("Seleccioná `Approve` o `Reject` antes de guardar.");
+      return;
+    }
 
     setIsSubmitting(true);
     setSubmitMessage(null);
@@ -339,6 +375,10 @@ function TrackCard({
     if (event.key !== "Enter" || !event.shiftKey) return;
     event.preventDefault();
     if (isLocked || isSubmitting) return;
+    if (!hasExplicitApprovalSelection) {
+      setSubmitMessage("Seleccioná `Approve` o `Reject` antes de guardar.");
+      return;
+    }
     event.currentTarget.form?.requestSubmit();
   }
 
@@ -361,7 +401,7 @@ function TrackCard({
 
   return (
     <article
-      className={`trackCard ${featured ? "trackCardFeatured" : ""} ${isFlipped ? "trackCardFlipped" : ""} ${isApprovedCard ? "trackCardApproved" : ""} ${isRejectedCard ? "trackCardRejected" : ""}`.trim()}
+      className={`trackCard ${isMainEpCard ? "trackCardMainEp" : ""} ${featured ? "trackCardFeatured" : ""} ${isFlipped ? "trackCardFlipped" : ""} ${isApprovedCard ? "trackCardApproved" : ""} ${isRejectedCard ? "trackCardRejected" : ""}`.trim()}
     >
       <div className="trackCardInner">
         <div
@@ -377,16 +417,27 @@ function TrackCard({
             }
           }}
         >
-          {effectiveApproval ? (
-            <span className="trackReviewRibbon trackReviewRibbonRejected">Revision</span>
+          {showApprovedRibbon ? (
+            <span className="trackReviewRibbon trackReviewRibbonApproved">Aprobado</span>
+          ) : null}
+          {showNewRibbon ? (
+            <span className="trackReviewRibbon trackReviewRibbonRejected">Nuevo</span>
           ) : null}
           <div className="trackCardHead">
             <div>
               <h3>{title}</h3>
-              <p className="trackMeta">{subtitle}</p>
+              <p className={`trackMeta ${isMainEpCard ? "trackMetaMulti" : ""}`}>
+                {subtitle}
+                {isMainEpCard && descriptor ? (
+                  <>
+                    <br />
+                    {descriptor}
+                  </>
+                ) : null}
+              </p>
             </div>
           </div>
-          <div className={`trackArtwork ${isRejectedCard ? "trackArtworkMuted" : ""}`}>
+          <div className="trackArtwork">
             {image ? (
               <>
                 <button
@@ -403,12 +454,6 @@ function TrackCard({
                   </svg>
                 </button>
                 <img src={image} alt={`${title} artwork`} />
-                {isRejectedCard ? (
-                  <div className="trackActiveProgress" aria-label={`Avance ${title}: ${activeReviewProgress}%`}>
-                    <span className="trackActiveProgressFill" style={{ width: `${activeReviewProgress}%` }} />
-                    <span className="trackActiveProgressLabel">{activeReviewProgress}%</span>
-                  </div>
-                ) : null}
                 <div className="trackProgressPillCopy">
                   <span>COMPLETED</span>
                   <strong>{progressValue}%</strong>
@@ -444,7 +489,11 @@ function TrackCard({
                 }`}
                 type="button"
                 disabled={isLocked}
-                onClick={() => setApproval("approved")}
+                onClick={() => {
+                  setApproval("approved");
+                  setHasExplicitApprovalSelection(true);
+                  setSubmitMessage(null);
+                }}
               >
                 Approve
               </button>
@@ -452,13 +501,17 @@ function TrackCard({
                 className={`trackApprovalButton trackApprovalButtonReject ${approval === "rejected" ? "trackApprovalButtonActive" : ""}`}
                 type="button"
                 disabled={isLocked}
-                onClick={() => setApproval("rejected")}
+                onClick={() => {
+                  setApproval("rejected");
+                  setHasExplicitApprovalSelection(true);
+                  setSubmitMessage(null);
+                }}
               >
                 Reject
               </button>
             </div>
 
-            {isRejectedCard ? (
+            {isRejectedCard && isLocked ? (
               <div className="trackCommentRead" role="note" aria-label="Comentario de revisión">
                 {(comment.trim() ? comment : "Sin comentario")
                   .split("\n")
@@ -482,7 +535,7 @@ function TrackCard({
 
             <div className="trackReviewMeta">
               <span>{lastUpdate}</span>
-              {saved ? <span>{submitMessage ?? "Review enviada"}</span> : <span>Sin enviar</span>}
+              {saved ? <span>{submitMessage ?? "Review enviada"}</span> : <span>{submitMessage ?? "Sin enviar"}</span>}
             </div>
 
             <div className="trackProgressCopy">
@@ -493,14 +546,14 @@ function TrackCard({
               <span className="trackProgressBarFill" style={{ width: `${progress}%` }} />
             </div>
 
-            {isLocked ? <div className="trackLockedNote">Revision cerrada. Esta card ya no admite nuevos cambios.</div> : null}
+            {isLocked ? <div className="trackLockedNote">{lockedNoteMessage}</div> : null}
             {isLocked && effectiveApproval === "rejected" ? (
               <div className="trackCorrectionBadge">Change requests</div>
             ) : null}
           </form>
         </div>
       </div>
-      {image && isImageOpen && typeof document !== "undefined"
+      {lightboxImage && isImageOpen && typeof document !== "undefined"
         ? createPortal(
             <div
               className="trackLightbox"
@@ -526,7 +579,7 @@ function TrackCard({
                 </div>
                 <figure className="trackLightboxFigure">
                   <div className="trackLightboxStage">
-                    <img src={image} alt={`${title} ampliado`} />
+                    <img src={lightboxImage} alt={`${title} ampliado`} />
                   </div>
                   <figcaption>{title}</figcaption>
                 </figure>
