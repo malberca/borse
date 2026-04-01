@@ -59,6 +59,12 @@ export const projectTimeline = [
     date: "31/03/2026 · 23:00",
     title: "Cierre final del portal",
     body: "Correcciones menores, última tapa y carga final de entregables.",
+    status: "done",
+  },
+  {
+    date: "31/03/2026 · 23:00",
+    title: "Final Generacion de Assets / Archivos en Alta Resolucion",
+    body: "Generación final de assets y exportación de archivos en alta resolución.",
     status: "current",
   },
 ];
@@ -139,10 +145,11 @@ export const finalFiles: Array<{
   },
   {
     slug: "asi-veras",
-    label: "EP general",
+    label: "Emblema",
     iconSrc: "/img/icons/veras.png",
-    availability: "Pendiente",
-    progress: 31,
+    availability: "Disponible en drive",
+    progress: 100,
+    href: "https://drive.google.com/drive/folders/1F43VFq_dE8vuLj1KCR-23RCix6lAr8Yf?usp=drive_link",
   },
 ];
 
@@ -216,12 +223,12 @@ export const tracks = [
   },
   {
     slug: "asi-veras",
-    title: "BORSE EP",
-    subtitle: "Te comparto la propuesta final de tapa.",
-    descriptor: "Trabajé sobre una línea minimalista, priorizando los símbolos como eje y manteniendo el fondo como soporte sutil.",
+    title: "Emblema",
+    subtitle: "",
+    descriptor: "",
     status: "Revisión",
-    image: "/img/Tapa_borse-ep.jpg",
-    imageFull: "/img/BORSE_EP.webp",
+    image: "/img/emblema.webp",
+    imageFull: "/img/emblema.webp",
     reviewer: "Mariano Borserini",
     lastUpdate: "2026-03-29",
     featured: true,

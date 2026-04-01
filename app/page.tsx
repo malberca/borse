@@ -68,7 +68,7 @@ const lockedTrackReviews: Record<
 
 const DOWNLOAD_PROGRESS_ANIMATION_MS = 60000;
 const DOWNLOAD_PROGRESS_POLL_MS = 30000;
-const TIMELINE_PROGRESS_PERCENT = 90;
+const TIMELINE_PROGRESS_PERCENT = 100;
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 const SUPABASE_PROGRESS_TABLE = process.env.NEXT_PUBLIC_DOWNLOAD_PROGRESS_TABLE ?? "download_progress";
@@ -147,12 +147,14 @@ function TrackCard({
   const lockedReview = lockedTrackReviews[slug];
   const effectiveApproval = approval ?? lockedReview?.approval ?? null;
   const isApprovedCard = !isMainEpCard && effectiveApproval === "approved";
+  const isStaticClosedCard = isApprovedCard || isMainEpCard;
   const isRejectedCard = effectiveApproval === "rejected";
   const isLocked = saved;
-  const progressValue = isApprovedCard ? 100 : clampProgressValue(externalProgress ?? progress);
+  const progressValue = isStaticClosedCard ? 100 : clampProgressValue(externalProgress ?? progress);
   const lightboxImage = imageFull ?? image;
   const showApprovedRibbon = effectiveApproval === "approved";
   const showNewRibbon = !showApprovedRibbon;
+  const hasFrontMeta = Boolean(subtitle || (isMainEpCard && descriptor));
   const lockedNoteMessage =
     isMainEpCard && effectiveApproval === "approved"
       ? "Revision cerrada. Esta card ya no admite nuevos cambios. Tan pronto como esten los archivos disponibles para la descarga recibiras una notifiacion por mail."
@@ -382,9 +384,9 @@ function TrackCard({
     event.currentTarget.form?.requestSubmit();
   }
 
-  if (isApprovedCard) {
+  if (isStaticClosedCard) {
     return (
-      <article className="trackCard trackCardApproved trackCardApprovedStatic">
+      <article className={`trackCard trackCardApproved trackCardApprovedStatic ${isMainEpCard ? "trackCardMainEpStatic" : ""}`.trim()}>
         <div className="trackClosedArtwork">
           {image ? <img src={image} alt={`${title} artwork`} /> : null}
           <span className="trackReviewRibbon trackReviewRibbonClosed">Cerrado</span>
@@ -418,7 +420,9 @@ function TrackCard({
           }}
         >
           {showApprovedRibbon ? (
-            <span className="trackReviewRibbon trackReviewRibbonApproved">Aprobado</span>
+            <span className={`trackReviewRibbon ${isMainEpCard ? "trackReviewRibbonClosed" : "trackReviewRibbonApproved"}`}>
+              {isMainEpCard ? "Cerrado" : "Aprobado"}
+            </span>
           ) : null}
           {showNewRibbon ? (
             <span className="trackReviewRibbon trackReviewRibbonRejected">Nuevo</span>
@@ -426,15 +430,17 @@ function TrackCard({
           <div className="trackCardHead">
             <div>
               <h3>{title}</h3>
-              <p className={`trackMeta ${isMainEpCard ? "trackMetaMulti" : ""}`}>
-                {subtitle}
-                {isMainEpCard && descriptor ? (
-                  <>
-                    <br />
-                    {descriptor}
-                  </>
-                ) : null}
-              </p>
+              {hasFrontMeta ? (
+                <p className={`trackMeta ${isMainEpCard ? "trackMetaMulti" : ""}`}>
+                  {subtitle}
+                  {isMainEpCard && descriptor ? (
+                    <>
+                      <br />
+                      {descriptor}
+                    </>
+                  ) : null}
+                </p>
+              ) : null}
             </div>
           </div>
           <div className="trackArtwork">
@@ -655,8 +661,8 @@ export default function Page() {
       <main className="page">
       <div className="marquee marqueeLime" aria-label="Estado de actualización">
         <div className="marqueeTrack">
-          <span>Portal activo en modo pre-cierre · entrega final prevista para el martes 31/03/2026 a las 23 hs.</span>
-          <span>Portal activo en modo pre-cierre · entrega final prevista para el martes 31/03/2026 a las 23 hs.</span>
+          <span>Portal activo en modo Cierre · entrega final prevista para el Miercoles 01/04/2026 a las 16 hs.</span>
+          <span>Portal activo en modo Cierre · entrega final prevista para el Miercoles 01/04/2026 a las 16 hs.</span>
         </div>
       </div>
 
@@ -748,7 +754,7 @@ export default function Page() {
             <span className="eyebrow">Seguimiento</span>
             <h2>Estado del proyecto</h2>
           </div>
-          <span className="timelineBadge">Cierre final en curso · martes 31/03/2026 · 23:00</span>
+          <span className="timelineBadge">Final generación de assets en curso · Miercoles -01/04/2026 · 16:00hs</span>
         </div>
 
         <div className="projectTimelineBarWrap" aria-hidden="true">
@@ -791,11 +797,13 @@ export default function Page() {
         </div>
         <div className="fileLinkList downloadsStripList">
           {finalFiles.map((item) => {
-            const progressValue = clampProgressValue(downloadProgress[item.slug] ?? item.progress);
+            const progressValue = 100;
+            const itemClassName = "fileLinkItem";
+            const progressFillClassName = "fileLinkProgressFill";
 
             return item.href ? (
               <a
-                className="fileLinkItem"
+                className={itemClassName}
                 href={item.href}
                 key={item.slug}
                 target="_blank"
@@ -820,7 +828,7 @@ export default function Page() {
                     </div>
                     <div className="fileLinkProgressTrack" aria-hidden="true">
                       <span
-                        className="fileLinkProgressFill"
+                        className={progressFillClassName}
                         style={{
                           width: `${progressValue}%`,
                           transitionDuration: `${DOWNLOAD_PROGRESS_ANIMATION_MS}ms`,
@@ -831,7 +839,7 @@ export default function Page() {
                 </div>
               </a>
             ) : (
-              <div className="fileLinkItem fileLinkItemDisabled" key={item.slug}>
+              <div className={`${itemClassName} fileLinkItemDisabled`} key={item.slug}>
                 <span className="fileLinkArrow" aria-hidden="true">
                   <img src="/img/gdrive_logo.png" alt="" />
                 </span>
@@ -851,7 +859,7 @@ export default function Page() {
                     </div>
                     <div className="fileLinkProgressTrack" aria-hidden="true">
                       <span
-                        className="fileLinkProgressFill"
+                        className={progressFillClassName}
                         style={{
                           width: `${progressValue}%`,
                           transitionDuration: `${DOWNLOAD_PROGRESS_ANIMATION_MS}ms`,
@@ -870,9 +878,8 @@ export default function Page() {
         <div className="sectionIntro">
           <span className="eyebrow">Tracks del EP</span>
           <h2>Revisados</h2>
-          <p className="tracksIntro">
-            El EP avanza desde el conflicto interno hacia una forma de percepción más precisa:
-            lucha, ruptura, rastro y revelación dentro de un mismo sistema.
+          <p className="tracksIntro tracksIntroTiny">
+            Entrega disponible en distintos tamaños arriba en modulo descargas.
           </p>
         </div>
         <div className="tracksLayout">
