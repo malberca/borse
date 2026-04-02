@@ -66,7 +66,49 @@ const lockedTrackReviews: Record<
   },
 };
 
-const DOWNLOAD_PROGRESS_ANIMATION_MS = 60000;
+const TERMINAL_ASCII_ART = String.raw`.                        __..,,... .,,,,,.
+                     ''''        ,'        \` .
+                               ,'  ,.  ..      \`  .
+                               \`.,'      ..           \`
+                     __..,.             .  ..     .
+                            \` .       .  \`.  .\` \`
+                                ,  \`.  \`.  \`._|,..
+                                  .  \`.  \`..'
+                                   \` -'\`''`;
+
+const sessionLogEntries: Array<{ timestamp: string; user: string; event: string }> = [
+  {
+    timestamp: "01/04/2026 22:15 hs",
+    user: "malberca",
+    event: "[OK] Correcciones en Tapa Emblema, Generacion de archivos con errores.",
+  },
+  {
+    timestamp: "01/04/2026 22:21 hs",
+    user: "malberca",
+    event: "[OK] Correcciones en Tapa Giles..., Generacion de archivos con errores.",
+  },
+  {
+    timestamp: "01/04/2026 22:30 hs",
+    user: "malberca",
+    event: "[OK] Correcciones en Tapa Cuatro..., Generacion de archivos con errores.",
+  },
+  {
+    timestamp: "01/04/2026 22:31 hs",
+    user: "malberca",
+    event: "[OK] Correcciones en Tapa Nunca..., Generacion de archivos con errores.",
+  },
+  {
+    timestamp: "01/04/2026 22:33 hs",
+    user: "malberca",
+    event: "[OK] Correccion en Tapa Vestigios..., Generacion de archivos con errores.",
+  },
+  {
+    timestamp: "2026-04-02 00:18:07",
+    user: "malberca",
+    event: "Modificacion de Progress bar en mod Descargas. panel de logs terminal agregado debajo de descargas.",
+  },
+];
+
 const DOWNLOAD_PROGRESS_POLL_MS = 30000;
 const TIMELINE_PROGRESS_PERCENT = 100;
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -800,6 +842,7 @@ export default function Page() {
             const progressValue = 100;
             const itemClassName = "fileLinkItem";
             const progressFillClassName = "fileLinkProgressFill";
+            const progressLabel = `${progressValue}%`;
 
             return item.href ? (
               <a
@@ -822,18 +865,9 @@ export default function Page() {
                     {item.availability}
                   </p>
                   <div className="fileLinkProgress" aria-label={`Avance ${item.label}: ${progressValue}%`}>
-                    <div className="fileLinkProgressMeta">
-                      <span>Avance</span>
-                      <strong>{progressValue}%</strong>
-                    </div>
+                    <strong className="fileLinkProgressValue">{progressLabel}</strong>
                     <div className="fileLinkProgressTrack" aria-hidden="true">
-                      <span
-                        className={progressFillClassName}
-                        style={{
-                          width: `${progressValue}%`,
-                          transitionDuration: `${DOWNLOAD_PROGRESS_ANIMATION_MS}ms`,
-                        }}
-                      />
+                      <span className={progressFillClassName} style={{ width: `${progressValue}%` }} />
                     </div>
                   </div>
                 </div>
@@ -853,24 +887,62 @@ export default function Page() {
                     {item.availability}
                   </p>
                   <div className="fileLinkProgress" aria-label={`Avance ${item.label}: ${progressValue}%`}>
-                    <div className="fileLinkProgressMeta">
-                      <span>Avance</span>
-                      <strong>{progressValue}%</strong>
-                    </div>
+                    <strong className="fileLinkProgressValue">{progressLabel}</strong>
                     <div className="fileLinkProgressTrack" aria-hidden="true">
-                      <span
-                        className={progressFillClassName}
-                        style={{
-                          width: `${progressValue}%`,
-                          transitionDuration: `${DOWNLOAD_PROGRESS_ANIMATION_MS}ms`,
-                        }}
-                      />
+                      <span className={progressFillClassName} style={{ width: `${progressValue}%` }} />
                     </div>
                   </div>
                 </div>
               </div>
             );
           })}
+        </div>
+      </section>
+
+      <section className="panel terminalPanel reveal reveal-4" id="session-logs">
+        <div className="terminalLiveBadge" aria-label="Logs en vivo">
+          <span className="terminalLiveDot" aria-hidden="true" />
+          <span>LIVE</span>
+        </div>
+
+        <div className="sectionIntro terminalIntro">
+          <div>
+            <span className="eyebrow">Session trace</span>
+            <h2>Logs</h2>
+          </div>
+          <p>Registro manual de movimientos del proyecto con lectura tipo terminal.</p>
+        </div>
+
+        <div className="terminalWindow" role="log" aria-label="Logs del proyecto">
+          <div className="terminalChrome" aria-hidden="true">
+            <div className="terminalChromeDots">
+              <span />
+              <span />
+              <span />
+            </div>
+            <span className="terminalChromeTitle">ma-no://clientes/server/logs</span>
+          </div>
+
+          <div className="terminalBody">
+            <div className="terminalAsciiBlock">
+              <span className="terminalPromptLine">$ handshake --channel MA-NO CLIENTES SERVER</span>
+              <pre className="terminalAscii" aria-hidden="true">
+                {TERMINAL_ASCII_ART}
+              </pre>
+              <p className="terminalAsciiMeta">sesion activa · operador principal: malberca · modo: manual trace</p>
+            </div>
+
+            <div className="terminalLogs">
+              {sessionLogEntries.map((entry) => (
+                <div className="terminalLogRow" key={`${entry.timestamp}-${entry.event}`}>
+                  <span className="terminalLogPrompt">&gt;</span>
+                  <span className="terminalLogTimestamp">{entry.timestamp}</span>
+                  <span className="terminalLogUser">{entry.user}</span>
+                  <span className="terminalLogEvent">{entry.event}</span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 
