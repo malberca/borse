@@ -78,27 +78,27 @@ const TERMINAL_ASCII_ART = String.raw`.                        __..,,... .,,,,,.
 
 const sessionLogEntries: Array<{ timestamp: string; user: string; event: string }> = [
   {
-    timestamp: "01/04/2026 22:15 hs",
+    timestamp: "2026-04-01 22:15:00",
     user: "malberca",
     event: "[OK] Correcciones en Tapa Emblema, Generacion de archivos con errores.",
   },
   {
-    timestamp: "01/04/2026 22:21 hs",
+    timestamp: "2026-04-01 22:21:00",
     user: "malberca",
     event: "[OK] Correcciones en Tapa Giles..., Generacion de archivos con errores.",
   },
   {
-    timestamp: "01/04/2026 22:30 hs",
+    timestamp: "2026-04-01 22:30:00",
     user: "malberca",
     event: "[OK] Correcciones en Tapa Cuatro..., Generacion de archivos con errores.",
   },
   {
-    timestamp: "01/04/2026 22:31 hs",
+    timestamp: "2026-04-01 22:31:00",
     user: "malberca",
     event: "[OK] Correcciones en Tapa Nunca..., Generacion de archivos con errores.",
   },
   {
-    timestamp: "01/04/2026 22:33 hs",
+    timestamp: "2026-04-01 22:33:00",
     user: "malberca",
     event: "[OK] Correccion en Tapa Vestigios..., Generacion de archivos con errores.",
   },
