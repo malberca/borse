@@ -3250,8 +3250,17 @@ details summary {
   line-height: 1.45;
 }
 
+.terminalLogRowSystem {
+  grid-template-columns: auto minmax(0, 1fr);
+}
+
 .terminalLogPrompt {
   color: #74f0a7;
+}
+
+.terminalLogSystemMessage {
+  color: rgba(244, 247, 251, 0.7);
+  letter-spacing: 0.03em;
 }
 
 .terminalLogTimestamp {
@@ -3265,6 +3274,15 @@ details summary {
 
 .terminalLogEvent {
   color: #ffffff;
+}
+
+.terminalLogLink {
+  color: #74f0a7;
+  text-decoration: none;
+}
+
+.terminalLogLink:hover {
+  text-decoration: underline;
 }
 
 .fileLinkItemDisabled {
@@ -3753,6 +3771,14 @@ details summary {
 
   .terminalLogPrompt {
     grid-row: 1 / span 3;
+  }
+
+  .terminalLogRowSystem {
+    grid-template-columns: auto 1fr;
+  }
+
+  .terminalLogRowSystem .terminalLogPrompt {
+    grid-row: auto;
   }
 
   .terminalLogTimestamp,

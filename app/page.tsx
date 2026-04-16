@@ -76,36 +76,43 @@ const TERMINAL_ASCII_ART = String.raw`.                        __..,,... .,,,,,.
                                   .  \`.  \`..'
                                    \` -'\`''`;
 
-const sessionLogEntries: Array<{ timestamp: string; user: string; event: string }> = [
+const sessionLogEntries: Array<
+  | { kind: "entry"; timestamp: string; user: string; event: string; href?: string; hrefLabel?: string }
+  | { kind: "system"; message: string }
+> = [
   {
-    timestamp: "2026-04-01 22:15:00",
+    kind: "entry",
+    timestamp: "2026-04-16 12:07:00",
     user: "malberca",
-    event: "[OK] Correcciones en Tapa Emblema, Generacion de archivos con errores.",
+    event: "[OK] Correccion tapa Vestigios.",
   },
   {
-    timestamp: "2026-04-01 22:21:00",
+    kind: "entry",
+    timestamp: "2026-04-16 12:12:00",
     user: "malberca",
-    event: "[OK] Correcciones en Tapa Giles..., Generacion de archivos con errores.",
+    event: "[OK] Se agrega archivo FB de Nunca mas me ire.",
   },
   {
-    timestamp: "2026-04-01 22:30:00",
+    kind: "entry",
+    timestamp: "2026-04-16 12:18:00",
     user: "malberca",
-    event: "[OK] Correcciones en Tapa Cuatro..., Generacion de archivos con errores.",
+    event: "[OK] Se mejora el centrado de tapa EMBLEMAS distintas versiones.",
   },
   {
-    timestamp: "2026-04-01 22:31:00",
-    user: "malberca",
-    event: "[OK] Correcciones en Tapa Nunca..., Generacion de archivos con errores.",
+    kind: "system",
+    message: "------------- CORRECCIONES 1504----------------",
   },
   {
-    timestamp: "2026-04-01 22:33:00",
-    user: "malberca",
-    event: "[OK] Correccion en Tapa Vestigios..., Generacion de archivos con errores.",
+    kind: "system",
+    message: "[Se recomienda eliminar todos los archivos y bajar el lote nuevo completo.]",
   },
   {
-    timestamp: "2026-04-02 00:18:07",
+    kind: "entry",
+    timestamp: "2026-04-16 12:22:00",
     user: "malberca",
-    event: "Modificacion de Progress bar en mod Descargas. panel de logs terminal agregado debajo de descargas.",
+    event: "[BONUS TRACK] Te dejo habilitada una carpeta mas en el repo ASSETS.",
+    href: "https://drive.google.com/drive/folders/14NtsseLpXlye5oq9XtlR106X-nTfjhhX?usp=drive_link",
+    hrefLabel: "link",
   },
 ];
 
@@ -934,12 +941,29 @@ export default function Page() {
 
             <div className="terminalLogs">
               {sessionLogEntries.map((entry) => (
-                <div className="terminalLogRow" key={`${entry.timestamp}-${entry.event}`}>
-                  <span className="terminalLogPrompt">&gt;</span>
-                  <span className="terminalLogTimestamp">{entry.timestamp}</span>
-                  <span className="terminalLogUser">{entry.user}</span>
-                  <span className="terminalLogEvent">{entry.event}</span>
-                </div>
+                entry.kind === "system" ? (
+                  <div className="terminalLogRow terminalLogRowSystem" key={entry.message}>
+                    <span className="terminalLogPrompt">#</span>
+                    <span className="terminalLogSystemMessage">{entry.message}</span>
+                  </div>
+                ) : (
+                  <div className="terminalLogRow" key={`${entry.timestamp}-${entry.event}`}>
+                    <span className="terminalLogPrompt">&gt;</span>
+                    <span className="terminalLogTimestamp">{entry.timestamp}</span>
+                    <span className="terminalLogUser">{entry.user}</span>
+                    <span className="terminalLogEvent">
+                      {entry.event}
+                      {entry.href ? (
+                        <>
+                          {" "}
+                          <a className="terminalLogLink" href={entry.href} target="_blank" rel="noreferrer">
+                            [{entry.hrefLabel ?? "link"}]
+                          </a>
+                        </>
+                      ) : null}
+                    </span>
+                  </div>
+                )
               ))}
             </div>
           </div>
